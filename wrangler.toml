@@ -1,4 +1,4 @@
-name = "irwin-studio"
+name = "irwin-studio-worker"
 type = "webpack"
 account_id = ""
 zone_id = ""
