@@ -34,11 +34,12 @@ jobs:
             ${{ runner.os }}-v2-yarn-cache-
 
       - name: Install Dependencies
-        run: |
-          yarn
-          yarn build
+        run: yarn
 
-      - name: Publish
+      - name: Build
+        run: yarn build
+
+      - name: Deploy
         uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
