@@ -9,7 +9,7 @@ const ComingSoon: React.FC = () => (
         <FloatingParticles style={{position: 'absolute'}} height="100vh" width="100vw" />
         <Splash>
             <Title>Irwin<span>Studio</span></Title>
-            <p>coming soon</p>
+            <p>coming soon smol change</p>
         </Splash>
     </>
 )
