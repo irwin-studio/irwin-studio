@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Splash from '../../../components/Splash';
-import { useBreakpoints } from '../../../services/BreakPoints';
 import FloatingParticles from './FloatingParticles';
 
 const ComingSoon: React.FC = () => (
