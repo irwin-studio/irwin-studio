@@ -1,6 +1,6 @@
-import _, { update } from 'lodash';
+import _ from 'lodash';
 import createService from '@adamdickinson/react-service';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 
 type Breakpoints = Record<string, number>;
 interface Breakpoint {
@@ -15,11 +15,11 @@ interface ServiceInput {
 interface BreakpointsAPI {
     currentHeight: number;
     currentWidth: number;
-    currentBreakpoint: string;
+    currentBreakpoint: Breakpoint;
     breakpoints: Breakpoints;
 }
 
-function useBreakpointsAPI({breakpoints}: ServiceInput) {
+function useBreakpointsAPI({breakpoints}: ServiceInput): BreakpointsAPI {
     const [sortedBreakpoints, setSortedBreakpoints] = useState<Breakpoint[]>([]);
     const [currentBreakpoint, setCurrentBreakpoint] = useState<Breakpoint>();
     const [currentHeight, setCurrentHeight] = useState(window.innerHeight);
@@ -27,10 +27,9 @@ function useBreakpointsAPI({breakpoints}: ServiceInput) {
 
     /*
      * if and when the provided breakpoints change - re-sort the values
-    */
+     */
     useEffect(() => {
-        const formatted = Object.entries(breakpoints)
-            .map(([name, value]) => ({ name, value }));
+        const formatted = Object.entries(breakpoints).map(([name, value]) => ({name, value}));
 
         const sorted = _.sortBy(formatted, ['value']);
         setSortedBreakpoints(sorted);
@@ -44,8 +43,10 @@ function useBreakpointsAPI({breakpoints}: ServiceInput) {
             const nextBreakpoint = sortedBreakpoints[index + 1];
             const isLastBreakpoint = index === sortedBreakpoints.length - 1;
 
-            return isLastBreakpoint && currentWidth >= breakpoint.value ||
-                currentWidth >= breakpoint.value && currentWidth < nextBreakpoint?.value
+            return (
+                (isLastBreakpoint && currentWidth >= breakpoint.value) ||
+                (currentWidth >= breakpoint.value && currentWidth < nextBreakpoint?.value)
+            );
         });
 
         setCurrentBreakpoint(breakpoint);
@@ -61,13 +62,11 @@ function useBreakpointsAPI({breakpoints}: ServiceInput) {
         currentWidth,
         currentBreakpoint,
         breakpoints,
-    }
+    };
 }
 
-const [BreakpointContext, useBreakpoints] = createService<BreakpointsAPI, ServiceInput>(useBreakpointsAPI);
+const [BreakpointContext, useBreakpoints] = createService<BreakpointsAPI, ServiceInput>(
+    useBreakpointsAPI,
+);
 
-export {
-    BreakpointsAPI,
-    BreakpointContext,
-    useBreakpoints
-}
+export {BreakpointsAPI, BreakpointContext, useBreakpoints};

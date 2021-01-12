@@ -1,7 +1,12 @@
 import {css} from 'styled-components';
 
 export default css`
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         font-family: 'moon_2.0regular';
 
         &.bold {
@@ -11,7 +16,6 @@ export default css`
         &.light {
             font-family: 'moon_2.0light';
         }
-
     }
 
     h1 {
@@ -30,5 +34,4 @@ export default css`
             font-weight: 300;
         }
     }
-
 `;

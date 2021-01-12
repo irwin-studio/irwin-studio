@@ -1,5 +1,3 @@
 import ComingSoon from './ComingSoon';
 
-export {
-    ComingSoon
-}
+export {ComingSoon};

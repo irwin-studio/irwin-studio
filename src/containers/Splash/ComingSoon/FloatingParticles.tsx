@@ -38,13 +38,13 @@ const FloatingParticles: React.FC<Props> = ({style}) => (
                     life: {
                         duration: {
                             value: 25,
-                        }
-                    }
+                        },
+                    },
                 },
             }}
         />
     </Blurred>
-)
+);
 
 const Blurred = styled.div`
     .blurred {
