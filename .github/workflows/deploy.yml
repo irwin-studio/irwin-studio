@@ -36,14 +36,20 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Build
-        run: yarn build
-
       - name: Test - lint
         run: yarn test:lint
 
       - name: Test - types
         run: yarn test:types
+
+      - name: Validate Build
+        run: yarn build
+        
+      - name: Create Release
+        run: yarn release
+
+      - name: Create Official Build
+        run: yarn build
 
       - name: Deploy
         uses: cloudflare/wrangler-action@1.3.0
