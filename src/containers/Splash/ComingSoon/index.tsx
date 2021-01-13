@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Splash from '../../../components/Splash';
 import FloatingParticles from './FloatingParticles';
+import pkg from '../../../../package.json';
 
 const ComingSoon: React.FC = () => (
     <>
@@ -12,9 +13,20 @@ const ComingSoon: React.FC = () => (
             </Title>
             <p>coming soon</p>
         </Splash>
+        <Version>v{pkg.version}</Version>
     </>
 );
 
+const Version = styled.p`
+    font-size: 1.25rem;
+
+    margin: 0;
+    padding: 2rem;
+
+    position: fixed;
+    bottom: 0rem;
+    right: 0rem;
+`;
 const Title = styled.h1`
     span {
         font-weight: 400;
