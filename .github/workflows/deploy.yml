@@ -44,9 +44,12 @@ jobs:
 
       - name: Validate Build
         run: yarn build
-        
+
       - name: Create Release
-        run: yarn release
+        run: |
+          git config --global user.email "lauchlan.irwin@gmail.com"
+          git config --global user.name "Lauchlan Irwin"
+          yarn release
 
       - name: Create Official Build
         run: yarn build
