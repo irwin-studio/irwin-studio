@@ -1,14 +1,18 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - main
+    pull_request:
+        types:
+        - closed
+
+        branches:
+        - main
 
 jobs:
-  deploy:
-    name: Deploy to Worker
+  release:
+    name: Create Release
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
 
     steps:
       - name: Fetch Latest
@@ -37,19 +41,10 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Test - lint
-        run: yarn test:lint
+      - name: Set Details
+        run: |
+          git config --global user.email "lauchlan.irwin@gmail.com"
+          git config --global user.name "Lauchlan Irwin"
 
-      - name: Test - types
-        run: yarn test:types
-
-      - name: Build
-        run: yarn build
-
-      - name: Deploy
-        uses: cloudflare/wrangler-action@1.3.0
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-        env:
-          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      - name: Create Release
+        run: yarn release

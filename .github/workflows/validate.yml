@@ -6,9 +6,10 @@ on:
       - main
 
 jobs:
-  deploy:
+  validate:
+    name: Validate Pull Request
     runs-on: ubuntu-latest
-    name: Validate
+
     steps:
       - name: Fetch Latest
         uses: actions/checkout@v2
