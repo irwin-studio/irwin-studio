@@ -1,4 +1,4 @@
-name: Deploy
+name: Release
 
 on:
     pull_request:
@@ -48,3 +48,9 @@ jobs:
 
       - name: Create Release
         run: yarn release
+
+      - name: Print Tags
+        run: echo $(git tag)
+
+      - name: Print Status
+        run: echo $(git status)
