@@ -49,7 +49,7 @@ jobs:
       - name: Create Release
         run: yarn release
 
-      -name: Publish Release
+      - name: Publish Release
         run: git push --follow-tags origin main
 
       - name: Create Build
