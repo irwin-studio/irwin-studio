@@ -1,4 +1,4 @@
-name: Release
+name: Release and Deploy
 
 on:
     pull_request:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   release:
-    name: Create Release
+    name: Release and Deploy
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
 
@@ -49,8 +49,16 @@ jobs:
       - name: Create Release
         run: yarn release
 
-      - name: Print Tags
-        run: echo $(git tag)
+      -name: Publish Release
+        run: git push --follow-tags origin main
 
-      - name: Print Status
-        run: echo $(git status)
+      - name: Create Build
+        run: yarn build
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+        env:
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
