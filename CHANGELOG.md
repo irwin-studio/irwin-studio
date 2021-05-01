@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.5 (2021-05-01)
+
+
+### Features
+
+* **cosmos:** integrate cosmos and create first fixture ([78b6a0a](https://github.com/lauchlan105/irwin-studio/commit/78b6a0a481c5b507c267db6e0411cbf567a5da65))
+
 ### 0.0.4 (2021-04-22)
 
 
