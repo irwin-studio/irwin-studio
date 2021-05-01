@@ -8,30 +8,10 @@ export default css`
     h5,
     h6 {
         font-family: 'moon_2.0regular';
-
-        &.bold {
-            font-family: 'moon_2.0bold';
-        }
-
-        &.light {
-            font-family: 'moon_2.0light';
-        }
     }
 
-    h1 {
-        font-size: 6rem;
-    }
-
+    td,
     p {
         font-family: 'Montserrat', sans-serif;
-        font-size: 1.8rem;
-
-        &.bold {
-            font-weight: 500;
-        }
-
-        &.light {
-            font-weight: 300;
-        }
     }
 `;
