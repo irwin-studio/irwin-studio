@@ -11,6 +11,7 @@
 # production
 /build
 /dist
+/src/assets/tailwind
 
 # misc
 .DS_Store

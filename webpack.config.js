@@ -46,7 +46,7 @@ module.exports = {
             {
                 test: /\.(woff|woff2|eot|ttf|otf)$/i,
                 type: 'asset/resource',
-              },
+            },
         ],
     },
     plugins: [
@@ -58,7 +58,7 @@ module.exports = {
             template: './src/index.html',
             title: 'Irwin Studio',
         }),
-        new CopyWebpackPlugin({ patterns: [ { from: './src/assets', to: 'assets' } ] })
+        new CopyWebpackPlugin({patterns: [{from: './src/assets', to: 'assets'}]}),
     ],
     devtool: 'source-map',
     resolve: {
