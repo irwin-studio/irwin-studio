@@ -11,7 +11,7 @@ const ComingSoon: React.FC = () => (
             <Title>
                 Irwin<span>Studio</span>
             </Title>
-            <p>coming soon</p>
+            <Subtitle>coming soon</Subtitle>
         </Splash>
         <Version>v{pkg.version}</Version>
     </>
@@ -28,10 +28,14 @@ const Version = styled.p`
     right: 0rem;
 `;
 const Title = styled.h1`
+    font-size: 6rem;
     span {
         font-weight: 400;
         margin-left: 0.6rem;
     }
+`;
+const Subtitle = styled.p`
+    font-size: 1.8rem;
 `;
 
 export default ComingSoon;

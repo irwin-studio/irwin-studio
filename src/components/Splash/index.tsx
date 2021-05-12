@@ -13,8 +13,11 @@ const Container = styled.div`
 `;
 
 const Fullscreen = styled.div`
+    top: 0;
+    left: 0;
     height: 100vh;
     width: 100vw;
+    overflow: hidden;
     display: flex;
     justify-content: center;
 `;
