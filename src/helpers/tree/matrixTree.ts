@@ -15,11 +15,7 @@ class MatrixTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
     nodes: Map<string, TreeNode<NodeData>> = new Map<string, TreeNode<NodeData>>();
 
     constructor(exportString?: string) {
-        if (exportString === undefined) return;
-        const data = JSON.parse(atob(exportString)) as ExportedTree<NodeData, EdgeData>;
-
-        data.nodes.forEach(node => this.nodes.set(node.name, node));
-        this.matrix = data.matrix;
+        if (exportString === undefined) this.import(exportString);
     }
 
     onEdgeChange(callback: Callback<TreeEdge<EdgeData>>): Callback {
@@ -110,6 +106,14 @@ class MatrixTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
         } else {
             this.matrix[from][to] = undefined;
         }
+    }
+
+    import(exportString?: string): void {
+        if (exportString === undefined) return;
+        const data = JSON.parse(atob(exportString)) as ExportedTree<NodeData, EdgeData>;
+
+        data.nodes.forEach(node => this.nodes.set(node.name, node));
+        this.matrix = data.matrix;
     }
 
     export(): string {
