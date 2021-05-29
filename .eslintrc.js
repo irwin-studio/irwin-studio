@@ -12,14 +12,20 @@ module.exports = {
             version: 'detect',
         },
     },
-    extends: [
-        'plugin:react/recommended',
-        'plugin:@typescript-eslint/recommended',
-        'prettier/@typescript-eslint',
-        'plugin:prettier/recommended',
-    ],
+    extends: ['plugin:react/recommended', 'plugin:prettier/recommended'],
     rules: {
         'react/prop-types': 0,
         'no-unused-vars': ['error', {vars: 'all', args: 'after-used', ignoreRestSiblings: false}],
     },
+    overrides: [
+        {
+            files: ['bin/*.js', 'lib/*.js'],
+            extends: [
+                'plugin:react/recommended',
+                'plugin:@typescript-eslint/recommended',
+                'prettier/@typescript-eslint',
+                'plugin:prettier/recommended',
+            ],
+        },
+    ],
 };
