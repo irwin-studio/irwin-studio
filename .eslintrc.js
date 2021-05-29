@@ -15,7 +15,11 @@ module.exports = {
     extends: ['plugin:react/recommended', 'plugin:prettier/recommended'],
     rules: {
         'react/prop-types': 0,
-        'no-unused-vars': ['error', {vars: 'all', args: 'after-used', ignoreRestSiblings: false}],
+        '@typescript-eslint/no-unused-vars': [
+            'error',
+            {vars: 'all', args: 'after-used', ignoreRestSiblings: false},
+        ],
+        'no-unused-vars': 'off',
     },
     overrides: [
         {
