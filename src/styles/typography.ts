@@ -7,11 +7,13 @@ export default css`
     h4,
     h5,
     h6 {
+        color: var(--secondary);
         font-family: 'moon_2.0regular';
     }
 
     td,
     p {
+        color: var(--secondary);
         font-family: 'Montserrat', sans-serif;
     }
 `;
