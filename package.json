@@ -1,6 +1,6 @@
 {
   "name": "irwin-studio",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Irwin-studio is my portfolio website to showcase my design and development capabilities. It also serves as a place for me to host and show-off my own creations.",
   "main": "index.js",
   "scripts": {
