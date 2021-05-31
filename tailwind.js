@@ -1,7 +1,10 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-    purge: [],
+    purge: {
+        enabled: true, // This will *always* minify, even on dev builds
+        content: ['./src/**/*.html', './src/**/*.[jt]s'],
+    },
     presets: [],
     darkMode: false, // or 'media' or 'class'
     theme: {
