@@ -1,71 +1,35 @@
 {
   "name": "irwin-studio",
   "version": "0.0.8",
-  "description": "Irwin-studio is my portfolio website to showcase my design and development capabilities. It also serves as a place for me to host and show-off my own creations.",
-  "main": "index.js",
-  "scripts": {
-    "release": "standard-version",
-    "test:lint": "eslint \"./src/**/*.{js,ts,tsx}\" --quiet --fix",
-    "test:types": "tsc --noEmit",
-    "clean": "rm -r ./build",
-    "start": "yarn build:css && webpack-dev-server --mode=development",
-    "start:worker": "yarn build && wrangler dev",
-    "build": "yarn build:css && webpack --mode=development --progress",
-    "build:css": "postcss src/styles/tailwind/config.css -o src/assets/tailwind/tailwind.css"
-  },
   "author": "Lauchlan Irwin <lauchlan.irwin@gmail.com>",
   "license": "AGPL-3.0-only",
-  "dependencies": {
-    "@adamdickinson/react-service": "^0.1.0",
-    "konva": "^7.2.5",
-    "lodash": "^4.17.20",
-    "query-string": "^7.0.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-konva": "^17.0.2-0",
-    "react-particles-js": "^3.4.1",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0",
-    "rxjs": "^7.1.0",
-    "styled-components": "^5.2.1"
+  "description": "Irwin Studio is my port-folio website created with a react frontend and graphql backend that is deployed using cloudflare workers",
+  "homepage": "https://github.com/lauchlan105/irwin-studio#readme",
+  "scripts": {
+    "release": "standard-version",
+    "start": "start:frontend",
+    "start:frontend": "yarn --cwd ./packages/frontend start",
+    "build": "build:frontend",
+    "build:frontend": "yarn --cwd ./packages/frontend build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lauchlan105/irwin-studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lauchlan105/irwin-studio/issues"
   },
   "devDependencies": {
-    "@cloudflare/wrangler": "^1.17.0",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@fullhuman/postcss-purgecss": "^4.0.3",
-    "@types/lodash": "^4.14.167",
-    "@types/node": "^14.14.20",
-    "@types/query-string": "^6.3.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "@types/react-router": "^5.1.11",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/styled-components": "^5.1.7",
-    "@typescript-eslint/eslint-plugin": "^4.13.0",
-    "@typescript-eslint/parser": "^4.13.0",
-    "autoprefixer": "^10.2.4",
-    "copy-webpack-plugin": "^7.0.0",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^4.5.1",
     "husky": "^4.3.7",
-    "postcss-cli": "^8.3.1",
-    "prettier": "^2.2.1",
-    "react-cosmos": "^5.6.2",
-    "source-map-loader": "^2.0.1",
-    "standard-version": "^9.1.0",
-    "tailwindcss": "^2.0.3",
-    "ts-loader": "^8.0.14",
-    "typescript": "^4.3.2",
-    "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^5.12.2",
-    "webpack-cli": "3",
-    "webpack-dev-server": "^3.11.1"
+    "lerna": "^4.0.0",
+    "prettier": "^2.2.1"
   },
   "config": {
     "commitizen": {
