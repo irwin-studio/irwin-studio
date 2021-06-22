@@ -1,4 +1,4 @@
-import {DELIMETER, Tree, TreeEdge, TreeNode} from '.';
+import {DELIMETER, Tree, TreeEdge, TreeNode} from '..';
 
 type Callback<T = void> = (change?: T) => void;
 
@@ -7,7 +7,7 @@ interface ExportedTree<NodeData, EdgeData> {
     nodes: TreeNode<NodeData>[];
 }
 
-class LinkedTree<NodeData = void, EdgeData = void> implements Tree<NodeData, EdgeData> {
+class LinkedTree<NodeData = {}, EdgeData = {}> implements Tree<NodeData, EdgeData> {
     nodeCallbacks: Callback<TreeNode<NodeData>>[] = [];
     edgeCallbacks: Callback<TreeEdge<EdgeData>>[] = [];
 
@@ -44,7 +44,7 @@ class LinkedTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
         if (name === undefined) {
             return [...this.edges.values()];
         } else {
-            return [...this.edges.values()].filter(edge => edge.from === name);
+            return [...this.edges.values()].filter(({from, to}) => [from, to].includes(name));
         }
     }
 
@@ -56,10 +56,14 @@ class LinkedTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
         }
     }
 
-    remove(name: string): void {
+    remove(name: string): TreeNode<NodeData> | undefined {
         this.unlink(name);
+        const node = this.nodes.get(name);
+        if (!node) return;
+
         this.nodes.delete(name);
-        this.nodeCallbacks.forEach(callback => callback());
+        this.nodeCallbacks.forEach(callback => callback(node));
+        return node;
     }
 
     link(from: string, to: string, data: EdgeData): void {
@@ -104,7 +108,7 @@ class LinkedTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
         let data: ExportedTree<NodeData, EdgeData>;
 
         try {
-            data = JSON.parse(atob(exportString));
+            data = JSON.parse(Buffer.from(exportString, 'base64').toString());
         } catch (ex) {
             throw new Error('Failed to deserialize import string');
         }
@@ -118,7 +122,7 @@ class LinkedTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
             data.edges.some(edge => typeof edge !== 'object' || !edge.from || !edge.to) ||
             data.nodes.some(node => typeof node !== 'object' || !node.name)
         ) {
-            throw new Error('Failed to deserialize import string');
+            throw new Error('Import string was malformed');
         }
 
         data.edges.forEach(edge => {
@@ -131,12 +135,12 @@ class LinkedTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
     }
 
     export(): string {
-        return btoa(
+        return Buffer.from(
             JSON.stringify({
                 edges: [...this.edges.values()],
                 nodes: [...this.nodes.values()],
             }),
-        );
+        ).toString('base64');
     }
 }
 
