@@ -35,11 +35,3 @@ export function subtract(...locations: Coordinates[]): Coordinates {
         startingPoint,
     );
 }
-
-export function distance(from: Coordinates, to: Coordinates): Coordinates {
-    return {
-        x: to.x - from.x,
-        y: to.y - from.y,
-        z: to.z - from.z,
-    };
-}
