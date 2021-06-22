@@ -1,4 +1,4 @@
-import {Tree, TreeEdge, TreeNode} from '.';
+import {Tree, TreeEdge, TreeNode} from '..';
 
 type Callback<T = void> = (change: T) => void;
 
