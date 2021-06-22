@@ -37,11 +37,17 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Test - lint
+      - name: Bootstrap Packages
+        run: yarn lerna bootstrap
+
+      - name: Test - lint (frontend)
+        working-directory: ./packages/frontend
         run: yarn test:lint
 
-      - name: Test - types
+      - name: Test - types (frontend)
+        working-directory: ./packages/frontend
         run: yarn test:types
 
-      - name: Build
+      - name: Build (frontend)
+        working-directory: ./packages/frontend
         run: yarn build

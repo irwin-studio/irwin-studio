@@ -41,21 +41,25 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
+      - name: Bootstrap Packages
+        run: yarn lerna bootstrap
+
       - name: Set Details
         run: |
           git config --global user.email "lauchlan.irwin@gmail.com"
           git config --global user.name "Lauchlan Irwin"
 
       - name: Create Release
-        run: yarn release
+        run: yarn lerna version --conventional-commits --yes
 
       - name: Publish Release
         run: git push --follow-tags origin main
 
-      - name: Create Build
-        run: yarn build
+      - name: Build Frontend
+        run: yarn --cwd ./packages/frontend build
 
-      - name: Deploy
+      - name: Deploy Frontend
+        working-directory: ./packages/frontend build
         uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
