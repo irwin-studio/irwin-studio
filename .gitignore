@@ -11,6 +11,7 @@
 # production
 **/build
 **/dist
+packages/backend/worker
 **/tailwind.css
 
 # misc
