@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "module": "ESNext",
+    "target": "ESNext",
+    "lib": ["ESNext", "WebWorker"],
+    "strict": true,
+    "preserveConstEnums": true,
+    "moduleResolution": "node"
+  },
+  "include": [
+    "./src/*.ts",
+    "./node_modules/@cloudflare/workers-types/index.d.ts"
+  ],
+  "exclude": ["node_modules/", "dist/"]
+}
