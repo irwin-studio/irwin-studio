@@ -2,7 +2,7 @@ import {KonvaEventObject} from 'konva/types/Node';
 import {Vector2d} from 'konva/types/types';
 import React, {ReactNode, useCallback, useEffect, useRef, useState} from 'react';
 import {Stage, Layer, Group, Line} from 'react-konva';
-import {distance} from '../../helpers/location';
+import {subtract} from '../../helpers/location';
 import {Route, Coordinates} from '../../helpers/location';
 import {Tree, TreeNode} from '../../helpers/tree';
 import grid from '../../assets/images/grid.png';
@@ -92,7 +92,6 @@ const TreeGraph = function TreeGraph<
             ref={canvas}
             x={stagePosition.x}
             y={stagePosition.y}
-            // TODO: grid background
             style={{
                 backgroundImage: `url(${grid})`,
                 backgroundRepeat: 'repeat',
@@ -119,12 +118,10 @@ const TreeGraph = function TreeGraph<
                             <Line
                                 x={route.from.x}
                                 y={route.from.y}
-                                points={[
-                                    0,
-                                    0,
-                                    distance(route.from, route.to).x,
-                                    distance(route.from, route.to).y,
-                                ]}
+                                points={(() => {
+                                    const destination = subtract(route.from, route.to);
+                                    return [0, 0, destination.x, destination.y];
+                                })()}
                                 tension={1}
                                 closed
                                 stroke="#373A43"
