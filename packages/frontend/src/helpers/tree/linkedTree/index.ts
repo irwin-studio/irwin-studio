@@ -108,7 +108,7 @@ class LinkedTree<NodeData = {}, EdgeData = {}> implements Tree<NodeData, EdgeDat
         let data: ExportedTree<NodeData, EdgeData>;
 
         try {
-            data = JSON.parse(Buffer.from(exportString, 'base64').toString());
+            data = JSON.parse(atob(exportString));
         } catch (ex) {
             throw new Error('Failed to deserialize import string');
         }
@@ -135,12 +135,12 @@ class LinkedTree<NodeData = {}, EdgeData = {}> implements Tree<NodeData, EdgeDat
     }
 
     export(): string {
-        return Buffer.from(
+        return btoa(
             JSON.stringify({
                 edges: [...this.edges.values()],
                 nodes: [...this.nodes.values()],
             }),
-        ).toString('base64');
+        );
     }
 }
 

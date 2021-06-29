@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {Coordinates, Route} from '../../helpers/location';
 import {LinkedTree, TreeNode} from '../../helpers/tree';
-import {standard} from './presets';
 import TreeGraph from '../../components/TreeRenderer';
 import {KonvaEventObject} from 'konva/types/Node';
 import queryString from 'query-string';
@@ -25,7 +24,7 @@ const Graph: React.FC = () => {
     const history = useHistory();
     const result = queryString.parse(search);
 
-    const hash = Array.isArray(result.hash) ? result.hash[0] : result.hash || standard;
+    const hash = Array.isArray(result.hash) ? result.hash[0] : result.hash;
     const tree = new LinkedTree<NodeData, EdgeData>(hash);
 
     const onSelect = (node: TreeNode<NodeData>, event: KonvaEventObject<MouseEvent>) => {
