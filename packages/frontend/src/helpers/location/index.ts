@@ -23,8 +23,8 @@ export function add(...locations: Coordinates[]): Coordinates {
 }
 
 export function subtract(...locations: Coordinates[]): Coordinates {
+    if (locations.length === 1) return locations[0];
     const [startingPoint, ...others] = locations;
-    if (locations.length === 1) return startingPoint;
 
     return others.reduce(
         (total, {x, y, z}) => ({
