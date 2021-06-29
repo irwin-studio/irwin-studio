@@ -1,4 +1,4 @@
-name: Release and Deploy
+name: Deploy to Staging
 
 on:
     pull_request:
@@ -6,11 +6,11 @@ on:
         - closed
 
         branches:
-        - main
+        - staging
 
 jobs:
   release:
-    name: Release and Deploy
+    name: Deploy to Staging
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
 
@@ -44,17 +44,6 @@ jobs:
       - name: Bootstrap Packages
         run: yarn lerna bootstrap
 
-      - name: Set Details
-        run: |
-          git config --global user.email "lauchlan.irwin@gmail.com"
-          git config --global user.name "Lauchlan Irwin"
-
-      - name: Create Release
-        run: yarn lerna version --conventional-commits --yes
-
-      - name: Publish Release
-        run: git push --follow-tags origin main
-
       - name: Build Frontend
         run: yarn --cwd ./packages/frontend build
 
@@ -63,6 +52,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: ./packages/frontend
+          environment: 'staging'
         env:
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
@@ -75,6 +65,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: ./packages/backend
+          environment: 'staging'
         env:
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
