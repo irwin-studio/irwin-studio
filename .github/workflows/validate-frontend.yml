@@ -2,6 +2,8 @@ name: Validate
 
 on:
   pull_request:
+    paths:
+      - ./packages/frontend
     branches:
       - main
       - staging
@@ -28,7 +30,9 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Cache yarn libs
-        uses: actions/cache@v1
+        id: v2-yarn-cache
+        working-directory: ./packages/frontend
+        uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-id.outputs.dir }}
           key: ${{ runner.os }}-v2-yarn-cache-${{ hashFiles('**/yarn.lock') }}
@@ -36,22 +40,13 @@ jobs:
             ${{ runner.os }}-v2-yarn-cache-
 
       - name: Install Dependencies
+        if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
+        working-directory: ./packages/frontend
         run: yarn
 
-      - name: Bootstrap Packages
-        run: yarn lerna bootstrap
-
-      - name: Test - lint (frontend)
+      - name: Test
         working-directory: ./packages/frontend
-        run: yarn test:lint
-
-      - name: Test - types (frontend)
-        working-directory: ./packages/frontend
-        run: yarn test:types
-
-      - name: Test - unit (frontend)
-        working-directory: ./packages/frontend
-        run: yarn test:unit
+        run: yarn test
 
       - name: Build (frontend)
         working-directory: ./packages/frontend

@@ -1,4 +1,4 @@
-name: Release and Deploy
+name: Backend Staging
 
 on:
     pull_request:
@@ -6,11 +6,11 @@ on:
         - closed
 
         branches:
-        - main
+        - staging
 
 jobs:
   release:
-    name: Release and Deploy
+    name: Backend Staging
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
 
@@ -32,7 +32,8 @@ jobs:
 
       - name: Cache yarn libs
         id: v2-yarn-cache
-        uses: actions/cache@v1
+        working-directory: ./packages/backend
+        uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-id.outputs.dir }}
           key: ${{ runner.os }}-v2-yarn-cache-${{ hashFiles('**/yarn.lock') }}
@@ -41,43 +42,19 @@ jobs:
 
       - name: Install Dependencies
         if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
+        working-directory: ./packages/backend
         run: yarn
 
-      - name: Bootstrap Packages
-        if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
-        run: yarn lerna bootstrap
+      - name: Build
+        working-directory: ./packages/backend
+        run: yarn build
 
-      - name: Set Details
-        run: |
-          git config --global user.email "lauchlan.irwin@gmail.com"
-          git config --global user.name "Lauchlan Irwin"
-
-      - name: Create Release
-        run: yarn lerna version --conventional-commits --yes
-
-      - name: Publish Release
-        run: git push --follow-tags origin main
-
-      - name: Build Frontend
-        run: yarn --cwd ./packages/frontend build
-
-      - name: Deploy Frontend
-        uses: cloudflare/wrangler-action@1.3.0
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          workingDirectory: ./packages/frontend
-        env:
-          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-
-      - name: Build Backend
-        run: yarn --cwd ./packages/backend build
-
-      - name: Deploy Backend
+      - name: Deploy
         uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: ./packages/backend
+          environment: 'staging'
         env:
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
