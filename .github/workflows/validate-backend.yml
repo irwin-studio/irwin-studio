@@ -1,0 +1,49 @@
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - ./packages/backend
+    branches:
+      - main
+      - staging
+  
+jobs:
+  validate:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch Latest
+        uses: actions/checkout@v2
+
+      - name: Increase inotify watchers
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Get yarn cache
+        id: yarn-cache-id
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache yarn libs
+        id: v2-yarn-cache
+        working-directory: ./packages/backend
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-id.outputs.dir }}
+          key: ${{ runner.os }}-v2-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-v2-yarn-cache-
+
+      - name: Install Dependencies
+        if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
+        working-directory: ./packages/backend
+        run: yarn
+
+      - name: Build
+        working-directory: ./packages/backend
+        run: yarn build
