@@ -30,10 +30,9 @@ jobs:
         id: yarn-cache-id
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-       - name: Cache yarn libs
+      - name: Cache yarn libs
         id: v2-yarn-cache
         working-directory: ./packages/frontend
-        uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-id.outputs.dir }}
           key: ${{ runner.os }}-v2-yarn-cache-${{ hashFiles('**/yarn.lock') }}

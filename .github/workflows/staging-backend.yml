@@ -32,7 +32,6 @@ jobs:
 
       - name: Cache yarn libs
         id: v2-yarn-cache
-        working-directory: ./packages/backend
         uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-id.outputs.dir }}
