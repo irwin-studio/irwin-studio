@@ -1,9 +1,9 @@
-name: Validate
+name: Validate Frontend
 
 on:
   pull_request:
     paths:
-      - ./packages/frontend
+      - packages/frontend/**
     branches:
       - main
       - staging
@@ -47,6 +47,6 @@ jobs:
         working-directory: ./packages/frontend
         run: yarn test
 
-      - name: Build (frontend)
+      - name: Build
         working-directory: ./packages/frontend
         run: yarn build
