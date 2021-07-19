@@ -1,9 +1,9 @@
-name: Validate
+name: Validate Backend
 
 on:
   pull_request:
     paths:
-      - ./packages/backend
+      - packages/backend/**
     branches:
       - main
       - staging
@@ -42,6 +42,10 @@ jobs:
         if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
         working-directory: ./packages/backend
         run: yarn
+
+      - name: Test
+        working-directory: ./packages/backend
+        run: yarn test
 
       - name: Build
         working-directory: ./packages/backend
