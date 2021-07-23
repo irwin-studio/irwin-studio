@@ -1,11 +1,17 @@
 import {apollo, playground} from './handlers';
+import {GqlHandlerOptions} from './types/handler';
 import setCors from './utils/setCors';
 
-const graphQLOptions = {
+const DEBUG_HEADER = 'debug-request';
+export const isDebugRequest = (request: Request) => {
+    return request.headers.get(DEBUG_HEADER) === 'true';
+};
+
+const graphQLOptions: GqlHandlerOptions = {
     baseEndpoint: '/',
     playgroundEndpoint: '/playground',
     forwardUnmatchedRequestsToOrigin: false,
-    debug: process.env.NODE_ENV === 'development',
+    allowDebug: !!process.env.ALLOW_DEBUG,
     cors: true,
     kvCache: false,
 };
@@ -41,7 +47,11 @@ async function handleRequest(request: Request): Promise<Response> {
         return new Response('Not found', {status: 404});
     } catch (err) {
         // send error to logging service here
-        const body = graphQLOptions.debug ? err : 'Something went wrong';
+
+        // TODO: restrict debug header to only authorized requests
+        const debug = graphQLOptions.allowDebug && isDebugRequest(request);
+        const body = debug ? err : 'Something went wrong';
+
         return new Response(body, {status: 500});
     }
 }
