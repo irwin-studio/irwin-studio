@@ -1,4 +1,4 @@
-import {ApolloServer, Config as Config} from 'apollo-server-cloudflare';
+import {ApolloServer, Config} from 'apollo-server-cloudflare';
 import {graphqlCloudflare} from 'apollo-server-cloudflare/dist/cloudflareApollo';
 import {Context} from '../types/context';
 import KVCache from '../cache';
