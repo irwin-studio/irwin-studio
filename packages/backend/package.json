@@ -7,7 +7,7 @@
     "test": "yarn test:types && yarn test:lint",
     "test:lint": "eslint \"./src/**/*.{js,ts,tsx}\" --quiet --fix",
     "test:types": "tsc --noEmit",
-    "start": "wrangler dev",
+    "start": "ALLOW_DEBUG=true wrangler dev --env=staging",
     "build": "wrangler build"
   },
   "author": "Lauchlan Irwin <lauchlan.irwin@gmail.com>",
