@@ -8,7 +8,7 @@ export async function getGithubStats(username: string = DEFAULT_USERNAME): Promi
     const response = await fetch(`https://github.com/${username}`);
 
     if (response.status !== 200) {
-        return;
+        throw new Error(`Github failed to respond: ${response.statusText} (${response.status})`);
     }
 
     const html = await response.text();

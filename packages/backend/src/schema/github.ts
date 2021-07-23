@@ -1,5 +1,6 @@
 import {gql} from 'apollo-server-cloudflare';
 import {getGithubStats} from '../helpers/github';
+import {Context} from '../types/context';
 import {GithubStats} from '../types/github';
 
 const typeDefs = gql`
@@ -22,8 +23,13 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-        githubStats: async (): Promise<GithubStats> => {
-            return getGithubStats();
+        githubStats: async (_, __, {DEBUG}: Context): Promise<GithubStats> => {
+            try {
+                return await getGithubStats();
+            } catch (ex) {
+                if (DEBUG) throw ex;
+                else throw new Error('Failed to get github information');
+            }
         },
     },
 };
