@@ -1,4 +1,4 @@
-import {GqlHandlerOptions} from './handler.types';
+import {GqlHandlerOptions} from '../types/handler';
 
 const html = (baseEndpoint: string) => `
 <!DOCTYPE html>

@@ -2,7 +2,7 @@ import {ApolloServer, Config} from 'apollo-server-cloudflare';
 import {graphqlCloudflare} from 'apollo-server-cloudflare/dist/cloudflareApollo';
 
 import KVCache from '../cache';
-import {GqlHandlerOptions} from './handler.types';
+import {GqlHandlerOptions} from '../types/handler';
 import {typeDefs, resolvers} from '../schema';
 
 const dataSources = () => ({});
