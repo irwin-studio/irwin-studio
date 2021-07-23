@@ -6,7 +6,8 @@
     "lib": ["ESNext", "WebWorker"],
     "strict": true,
     "preserveConstEnums": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
   },
   "include": [
     "./src/*.ts",
