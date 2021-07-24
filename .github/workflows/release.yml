@@ -56,8 +56,11 @@ jobs:
       - name: Create Release
         run: yarn lerna version --conventional-commits --yes
 
-      - name: Publish Release
+      - name: Publish release to main branch
         run: git push --follow-tags origin main
+
+      - name: Publish release to staging branch
+        run: git push --follow-tags origin staging
 
       - name: Build Frontend
         run: yarn --cwd ./packages/frontend build
