@@ -1,5 +1,5 @@
 {
-  "name": "cf-gql",
+  "name": "irwin-studio-backend",
   "version": "0.0.11",
   "description": "Backend for Irwin Studio",
   "main": "src/index.ts",
