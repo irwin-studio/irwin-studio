@@ -39,9 +39,8 @@ jobs:
             ${{ runner.os }}-v2-yarn-cache-
 
       - name: Install Dependencies
-        if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
         working-directory: ./packages/frontend
-        run: yarn
+        run: yarn install --prefer-offline --frozen-lockfile
 
       - name: Test
         working-directory: ./packages/frontend
