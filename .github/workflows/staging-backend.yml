@@ -31,13 +31,13 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Cache yarn libs
-        id: v2-yarn-cache
+        id: irwin-studio-cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-id.outputs.dir }}
-          key: ${{ runner.os }}-v2-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-irwin-studio-cache-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-v2-yarn-cache-
+            ${{ runner.os }}-irwin-studio-cache-
 
       - name: Install Dependencies
         working-directory: ./packages/backend
