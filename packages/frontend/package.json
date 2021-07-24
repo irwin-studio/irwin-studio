@@ -1,6 +1,6 @@
 {
   "name": "irwin-studio-frontend",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Frontend for Irwin Studio",
   "main": "index.js",
   "scripts": {
