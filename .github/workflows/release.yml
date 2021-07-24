@@ -32,7 +32,7 @@ jobs:
 
       - name: Cache yarn libs
         id: v2-yarn-cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-id.outputs.dir }}
           key: ${{ runner.os }}-v2-yarn-cache-${{ hashFiles('**/yarn.lock') }}
@@ -40,12 +40,13 @@ jobs:
             ${{ runner.os }}-v2-yarn-cache-
 
       - name: Install Dependencies
-        if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
-        run: yarn
+        run: yarn --prefer--offline --frozen-lockfile
 
+      # The double-double-dash (-- --) is required here because...
+      # The second is for lerna to parse the flags to the npm client
+      # The first one is so that the second '--' and the following flags are sent to the lerna command
       - name: Bootstrap Packages
-        if: steps.v2-yarn-cache.outputs.cache-hit != 'true'
-        run: yarn lerna bootstrap
+        run: yarn lerna bootstrap -- -- --prefer-offline --frozen-lockfile
 
       - name: Set Details
         run: |
