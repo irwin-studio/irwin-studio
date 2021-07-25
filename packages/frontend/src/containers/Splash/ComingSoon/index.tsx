@@ -29,8 +29,9 @@ const Version = styled.p`
 `;
 const Title = styled.h1`
     font-size: 6rem;
+    font-weight: 400;
+
     span {
-        font-weight: 400;
         margin-left: 0.6rem;
     }
 `;
