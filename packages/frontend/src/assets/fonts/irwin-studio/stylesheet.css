@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'irwin-studio';
+    src:  url('irwin-studio.ttf?cs8h7') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
+  
+  i {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'irwin-studio' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+  
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .icon-at-symbol:before {
+    content: "\e900";
+  }
+  .icon-github:before {
+    content: "\e901";
+  }
+  .icon-linkedIn:before {
+    content: "\e902";
+  }
