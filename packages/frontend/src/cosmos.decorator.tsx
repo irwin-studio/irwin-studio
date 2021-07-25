@@ -1,6 +1,6 @@
 import React from 'react';
+import {breakpoints} from '.';
 import {BreakpointContext} from './services/BreakPoints';
-import breakpoints from './helpers/breakpoints';
 import BaseStyle from './styles';
 
 const Wrap: React.FC = ({children}) => {
