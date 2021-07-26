@@ -14,7 +14,7 @@ type LoginAction = (provider: AuthProvider) => Promise<void | Firebase.auth.User
 
 export interface AuthAPI {
     user: Firebase.User;
-    signout: () => void;
+    logout: () => void;
     login: (providerKey: LOGIN_PROVIDER, method?: LOGIN_METHOD) => void;
 }
 
@@ -42,14 +42,14 @@ function useAuthAPI(): AuthAPI {
         performLogin(provider);
     };
 
-    const signout = () => {
+    const logout = () => {
         firebase.auth().signOut();
     };
 
     return {
         user,
         login,
-        signout,
+        logout,
     };
 }
 
