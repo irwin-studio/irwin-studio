@@ -1,15 +1,28 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Splash: React.FC = ({children}) => (
+interface Props {
+    background?: React.ReactElement;
+}
+
+const Splash: React.FC<Props> = ({background, children}) => (
     <Fullscreen>
+        <Background>{background}</Background>
         <Container>{children}</Container>
     </Fullscreen>
 );
 
 const Container = styled.div`
+    z-index: 5;
     margin: auto;
     text-align: center;
+`;
+
+const Background = styled.div`
+    z-index: 1;
+    position: absolute;
+    height: 100%;
+    width: 100%;
 `;
 
 const Fullscreen = styled.div`
