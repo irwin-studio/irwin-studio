@@ -4,6 +4,7 @@ import BaseStyle from './styles';
 import App from './containers/App';
 import {BreakpointContext} from './services/BreakPoints';
 import {FirebaseContext} from './services/Firebase';
+import {AuthContext} from './services/Auth';
 
 export const breakpoints = {
     sm: 640,
@@ -16,8 +17,10 @@ export const breakpoints = {
 ReactDOM.render(
     <BreakpointContext breakpoints={breakpoints}>
         <FirebaseContext>
-            <BaseStyle />
-            <App />
+            <AuthContext>
+                <BaseStyle />
+                <App />
+            </AuthContext>
         </FirebaseContext>
     </BreakpointContext>,
     document.getElementById('root'),
