@@ -37,7 +37,7 @@ const Login: React.FC = () => {
                 {!!auth.user && (
                     <SignedIn>
                         <h2>Welcome {auth.user.displayName}</h2>
-                        <p onClick={() => auth.signout()}>signout</p>
+                        <p onClick={() => auth.logout()}>signout</p>
                     </SignedIn>
                 )}
             </Container>
