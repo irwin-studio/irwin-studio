@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import Splash from '../../../components/Splash';
-import FloatingParticles from './FloatingParticles';
 import pkg from '../../../../package.json';
+import Embers from '../../../components/Embers';
+
+const Background = <Embers style={{position: 'absolute'}} height="100vh" width="100vw" />;
 
 const ComingSoon: React.FC = () => (
     <>
-        <FloatingParticles style={{position: 'absolute'}} height="100vh" width="100vw" />
-        <Splash>
+        <Splash background={Background}>
             <Title>
                 Irwin<span>Studio</span>
             </Title>
