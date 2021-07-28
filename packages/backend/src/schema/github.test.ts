@@ -1,5 +1,5 @@
 import {DEFAULT_SERVER_CONFIGURATION} from '../server';
-import {createServer} from '../handlers';
+import {createServer} from '../server';
 import {getQueryMethod} from '../utils/testing';
 
 const server = createServer(DEFAULT_SERVER_CONFIGURATION);
