@@ -38,7 +38,7 @@ async function handleRequest(request: Request): Promise<Response> {
         // send error to logging service here
 
         // TODO: restrict debug header to only authorized requests
-        const debug = serverConfiguration.allowDebug && isDebugRequest(request);
+        const debug = serverConfiguration.debugMode && isDebugRequest(request);
         const body = debug ? err : 'Something went wrong';
 
         return new Response(body, {status: 500});
