@@ -1,4 +1,4 @@
-import {GqlHandlerOptions} from '../types/handler';
+import {ServerConfiguration} from '../server';
 
 const html = (baseEndpoint: string) => `
 <!DOCTYPE html>
@@ -494,7 +494,7 @@ const html = (baseEndpoint: string) => `
 `;
 
 const headers = {'Content-Type': 'text/html'};
-const handler = (request: Request, {baseEndpoint}: GqlHandlerOptions) =>
+const handler = (request: Request, {baseEndpoint}: ServerConfiguration) =>
     new Response(html(baseEndpoint), {headers});
 
 export default handler;

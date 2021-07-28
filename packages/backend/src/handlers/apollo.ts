@@ -1,32 +1,12 @@
-import {ApolloServer, Config} from 'apollo-server-cloudflare';
 import {graphqlCloudflare} from 'apollo-server-cloudflare/dist/cloudflareApollo';
-import {Context} from '../types/context';
-import KVCache from '../cache';
-import {GqlHandlerOptions} from '../types/handler';
-import {typeDefs, resolvers} from '../schema';
-import {isDebugRequest} from '..';
+import {createServer, ServerConfiguration} from '../server';
+import {isDebugRequest} from '../utils/debug';
 
-const dataSources = () => ({});
-
-const createServer = (graphQLOptions: GqlHandlerOptions, debug: boolean) => {
-    const context: Context = {
-        DEBUG: debug,
-    };
-
-    return new ApolloServer({
-        typeDefs,
-        resolvers,
-        introspection: true,
-        dataSources,
-        ...(graphQLOptions.kvCache ? {cache: new KVCache()} : {}),
-        context,
-    } as Config);
-};
-
-export default (request: Request, graphQLOptions: GqlHandlerOptions): Response => {
-    const debug = graphQLOptions.allowDebug && isDebugRequest(request);
-    const server = createServer(graphQLOptions, debug);
-
+export default (request: Request, serverConfiguration: ServerConfiguration): Response => {
+    const server = createServer({
+        ...serverConfiguration,
+        debugMode: serverConfiguration.debugMode && isDebugRequest(request),
+    });
     // @ts-ignore
     return graphqlCloudflare(() => server.createGraphQLServerOptions(request))(request);
 };
