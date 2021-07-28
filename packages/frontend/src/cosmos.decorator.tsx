@@ -1,14 +1,16 @@
 import React from 'react';
-import {breakpoints} from '.';
-import {BreakpointContext} from './services/BreakPoints';
+import {AuthContext} from './services/Auth';
+import {FirebaseContext} from './services/Firebase';
 import BaseStyle from './styles';
 
 const Wrap: React.FC = ({children}) => {
     return (
-        <BreakpointContext breakpoints={breakpoints}>
-            <BaseStyle />
-            {children}
-        </BreakpointContext>
+        <FirebaseContext>
+            <AuthContext>
+                <BaseStyle />
+                {children}
+            </AuthContext>
+        </FirebaseContext>
     );
 };
 
