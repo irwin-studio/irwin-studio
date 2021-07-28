@@ -8,7 +8,7 @@ import {Circle, Text} from 'react-konva';
 import {useHistory, useLocation} from 'react-router';
 import {Observable} from 'rxjs';
 import {throttleTime} from 'rxjs/operators';
-
+import * as presets from './presets';
 interface NodeData {
     selected: boolean;
     location: Coordinates;
@@ -25,7 +25,7 @@ const Graph: React.FC = () => {
     const result = queryString.parse(search);
 
     const hash = Array.isArray(result.hash) ? result.hash[0] : result.hash;
-    const tree = new LinkedTree<NodeData, EdgeData>(hash);
+    const tree = new LinkedTree<NodeData, EdgeData>(hash || presets.standard);
 
     const onSelect = (node: TreeNode<NodeData>, event: KonvaEventObject<MouseEvent>) => {
         if (!event.evt.ctrlKey) {

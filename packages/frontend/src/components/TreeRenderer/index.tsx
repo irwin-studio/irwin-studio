@@ -57,31 +57,9 @@ const TreeGraph = function TreeGraph<
         setScale({x: newScale.x < 0 ? 0 : newScale.x, y: newScale.y < 0 ? 0 : newScale.y});
     };
 
-    const centerView = useCallback(() => {
-        if (canvas.current === undefined) return;
-        const topLeft: Vector2d = {x: Infinity, y: Infinity};
-        const bottomRight: Vector2d = {x: -Infinity, y: -Infinity};
-
-        tree.getNodes().forEach(node => {
-            if (topLeft.x > node.location.x) topLeft.x = node.location.x;
-            if (topLeft.y > node.location.y) topLeft.y = node.location.y;
-            if (bottomRight.x < node.location.x) bottomRight.x = node.location.x;
-            if (bottomRight.y < node.location.y) bottomRight.y = node.location.y;
-        });
-
-        const center = {
-            x: -(topLeft.x + (bottomRight.x - topLeft.x) / 2) + canvas.current.width() / 2,
-            y: -(topLeft.y + (bottomRight.y - topLeft.y) / 2) + canvas.current.height() / 2,
-        };
-
-        setStagePosition({x: center.x, y: center.y});
-    }, [canvas.current]);
-
     useEffect(() => {
         updateRenderedNodes();
         updateEdges();
-
-        centerView();
 
         return tree.onNodeChange(() => updateRenderedNodes());
     }, [tree]);
@@ -119,7 +97,7 @@ const TreeGraph = function TreeGraph<
                                 x={route.from.x}
                                 y={route.from.y}
                                 points={(() => {
-                                    const destination = subtract(route.from, route.to);
+                                    const destination = subtract(route.to, route.from);
                                     return [0, 0, destination.x, destination.y];
                                 })()}
                                 tension={1}
