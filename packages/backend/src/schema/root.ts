@@ -1,5 +1,6 @@
 import {gql} from 'apollo-server-cloudflare';
-import pkg from '../../package.json';
+import {Version} from '../types/root';
+const pkg = require('../../package.json');
 
 const typeDefs = gql`
     type Query {
@@ -9,7 +10,7 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-        version() {
+        version(): Version {
             return pkg.version;
         },
     },
