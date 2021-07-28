@@ -56,7 +56,7 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new DefinePlugin({
-                IS_TESTING: undefined,
+                IS_TESTING: JSON.stringify(!IS_PROD),
                 FIREBASE_CONFIG: JSON.stringify({
                     apiKey: process.env.FB_API_KEY,
                     authDomain: process.env.FB_AUTH_DOMAIN,
