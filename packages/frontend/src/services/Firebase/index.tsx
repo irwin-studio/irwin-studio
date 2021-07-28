@@ -9,9 +9,12 @@ import 'firebase/auth';
 import 'firebase/firestore';
 
 export const initializeFirebase = (): typeof Firebase => {
-    // Initialize Firebase
-    Firebase.initializeApp(FIREBASE_CONFIG);
-    Firebase.analytics();
+    try {
+        Firebase.initializeApp(FIREBASE_CONFIG);
+        if (!IS_TESTING) Firebase.analytics();
+    } catch {
+        // no-up
+    }
 
     return Firebase;
 };
