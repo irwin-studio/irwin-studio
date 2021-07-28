@@ -23,11 +23,11 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-        githubStats: async (_, __, {DEBUG}: Context): Promise<GithubStats> => {
+        githubStats: async (_, __, {debug}: Context): Promise<GithubStats> => {
             try {
                 return await getGithubStats();
             } catch (ex) {
-                if (DEBUG) throw ex;
+                if (debug) throw ex;
                 else throw new Error('Failed to get github information');
             }
         },
