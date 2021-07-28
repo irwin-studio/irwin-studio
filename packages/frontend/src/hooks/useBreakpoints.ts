@@ -1,15 +1,10 @@
 import _ from 'lodash';
-import createService from '@adamdickinson/react-service';
-import {useEffect, useState} from 'react';
+import {useState, useEffect} from 'react';
 
 type Breakpoints = Record<string, number>;
 interface Breakpoint {
     name: string;
     value: number;
-}
-
-interface ServiceInput {
-    breakpoints: Breakpoints;
 }
 
 interface BreakpointsAPI {
@@ -19,7 +14,15 @@ interface BreakpointsAPI {
     breakpoints: Breakpoints;
 }
 
-function useBreakpointsAPI({breakpoints}: ServiceInput): BreakpointsAPI {
+export const DEFAULT_BREAKPOINTS = {
+    sm: 640,
+    md: 768,
+    lg: 1024,
+    xl: 1280,
+    '2xl': 1536,
+};
+
+export function useBreakpointsAPI(breakpoints: Breakpoints = DEFAULT_BREAKPOINTS): BreakpointsAPI {
     const [sortedBreakpoints, setSortedBreakpoints] = useState<Breakpoint[]>([]);
     const [currentBreakpoint, setCurrentBreakpoint] = useState<Breakpoint>();
     const [currentHeight, setCurrentHeight] = useState(window.innerHeight);
@@ -52,10 +55,15 @@ function useBreakpointsAPI({breakpoints}: ServiceInput): BreakpointsAPI {
         setCurrentBreakpoint(breakpoint);
     }, [sortedBreakpoints, currentWidth]);
 
-    window.onresize = () => {
-        setCurrentHeight(window.innerHeight);
-        setCurrentWidth(window.innerWidth);
-    };
+    useEffect(() => {
+        const setValues = () => {
+            setCurrentHeight(window.innerHeight);
+            setCurrentWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', setValues);
+        () => window.removeEventListener('resize', setValues);
+    });
 
     return {
         currentHeight,
@@ -64,9 +72,3 @@ function useBreakpointsAPI({breakpoints}: ServiceInput): BreakpointsAPI {
         breakpoints,
     };
 }
-
-const [BreakpointContext, useBreakpoints] = createService<BreakpointsAPI, ServiceInput>(
-    useBreakpointsAPI,
-);
-
-export {BreakpointsAPI, BreakpointContext, useBreakpoints};
