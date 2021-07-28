@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@adamdickinson/react-service@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@adamdickinson/react-service/-/react-service-0.1.0.tgz#f80fb51cccdf7706c2cced299ee53b25468a9e4a"
-  integrity sha512-2pejMQyLZP/FrcyD1HTLi5Jr7uQF51BJG98YvgzM86bx+iTZj2WBRfG10o9Yi9M3lsswBgISGnnLZ7/bqJkw4A==
+"@adamdickinson/react-service@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@adamdickinson/react-service/-/react-service-2.0.0.tgz#e63dee2630f7f6019390387ebf191fcf77555577"
+  integrity sha512-gDp/J7NOO2lyOIsQJvqfkwJX4ZiaHwDTFSTUHHvDevR23zN79KnkEzE/Dvp1bwUnGJhbhDj3JGX6r2glcjqlRw==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.11":
   version "7.12.11"
