@@ -20,10 +20,19 @@ export async function getGithubStats(username: string = DEFAULT_USERNAME): Promi
     const from = container.getAttribute('data-from');
     const to = container.getAttribute('data-to');
 
+    if (from === undefined || to === undefined) {
+        throw new Error(`Failed to scrape page ({ to: ${to}, from: ${from}})`);
+    }
+
     const commits = graph.querySelectorAll('rect');
     const commitCounts = commits.map(el => {
         const count = el.getAttribute('data-count');
-        return Number.parseInt(count);
+
+        if (count === undefined) {
+            throw new Error(`Failed to scrape page - some 'count' values were not found`);
+        }
+
+        return Number.parseInt(count || '0');
     });
 
     return {
