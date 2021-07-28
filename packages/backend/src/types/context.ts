@@ -1,3 +1,3 @@
 export interface Context {
-    DEBUG: boolean;
+    debug: boolean;
 }
