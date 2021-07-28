@@ -9,6 +9,7 @@
     "test:types": "tsc --noEmit",
     "test:unit": "jest",
     "clean": "rm -r ./build",
+    "start:cosmos": "cosmos --mode=development",
     "start": "webpack-dev-server --mode=development",
     "start:worker": "yarn build && wrangler dev",
     "build": "webpack --mode=production --progress"
@@ -16,7 +17,7 @@
   "author": "Lauchlan Irwin <lauchlan.irwin@gmail.com>",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@adamdickinson/react-service": "^0.1.0",
+    "@adamdickinson/react-service": "^2.0.0",
     "firebase": "^8.8.0",
     "konva": "^7.2.5",
     "lodash": "^4.17.20",
