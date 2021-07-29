@@ -8,22 +8,27 @@ interface Props {
     color: string;
     blur: number;
     fpsLimit: number;
+    lifetime: number;
     style: React.CSSProperties;
     height?: string;
     width?: string;
+    children?: undefined;
 }
 
-const DEFAULTS: Props = {
+export const DEFAULTS: Props = {
     count: 90,
     speed: 0.9,
     color: '#373A43',
     blur: 2,
-    fpsLimit: 30,
+    fpsLimit: 60,
+    lifetime: 25,
     style: {},
+    height: '100%',
+    width: '100%',
 };
 
 const Embers: React.FC<Partial<Props>> = props => {
-    const {style, count, speed, color, fpsLimit, blur} = {...DEFAULTS, ...props};
+    const {style, count, speed, color, fpsLimit, blur, lifetime} = {...DEFAULTS, ...props};
 
     return (
         <Blurred blur={`${blur}px`}>
@@ -54,7 +59,7 @@ const Embers: React.FC<Partial<Props>> = props => {
                         },
                         life: {
                             duration: {
-                                value: 25,
+                                value: lifetime,
                             },
                         },
                     },
