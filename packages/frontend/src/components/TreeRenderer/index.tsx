@@ -10,14 +10,22 @@ import grid from '../../assets/images/grid.png';
 const BACKGROUND_SIZE = 50;
 interface Props<NodeData extends {location: Coordinates}, EdgeData extends {route: Route}> {
     tree: Tree<NodeData, EdgeData>;
-    onClick(event: KonvaEventObject<MouseEvent>): void;
-    onSelect(node: TreeNode<NodeData>, event: KonvaEventObject<MouseEvent>): void;
-    renderNode(node: TreeNode<NodeData>): ReactNode;
+    renderNode: (node: TreeNode<NodeData>) => ReactNode;
+    onClick?: (event: KonvaEventObject<MouseEvent>) => void;
+    onSelect?: (node: TreeNode<NodeData>, event: KonvaEventObject<MouseEvent>) => void;
+}
+
+export interface RequiredNodeData {
+    location: Coordinates;
+}
+
+export interface RequiredEdgeData {
+    route: Route;
 }
 
 const TreeGraph = function TreeGraph<
-    NodeData extends {location: Coordinates},
-    EdgeData extends {route: Route}
+    NodeData extends RequiredNodeData,
+    EdgeData extends RequiredEdgeData
 >({tree, renderNode, onClick, onSelect}: Props<NodeData, EdgeData>): JSX.Element {
     const canvas = useRef<any>();
     const [currentNodes, setCurrentNodes] = useState<TreeNode<NodeData>[]>(tree.getNodes());
@@ -85,7 +93,7 @@ const TreeGraph = function TreeGraph<
             scale={scale}
             onWheel={onWheel}
             onClick={e => {
-                if (e.target === canvas.current) onClick(e);
+                if (e.target === canvas.current) onClick?.(e);
             }}
         >
             {/* EDGES */}
@@ -125,7 +133,7 @@ const TreeGraph = function TreeGraph<
                             });
                         }}
                         onClick={event => {
-                            onSelect(node, event);
+                            onSelect?.(node, event);
                             // updateRenderedNodes();
                         }}
                     >
