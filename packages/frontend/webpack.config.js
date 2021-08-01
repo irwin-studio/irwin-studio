@@ -5,12 +5,16 @@ const {DefinePlugin} = require('webpack');
 const path = require('path');
 
 module.exports = (env, argv) => {
+    const isCosmos = !!argv.cosmos;
     const mode = argv.mode || 'production';
     const IS_PROD = mode === 'production';
 
     return {
         context: __dirname,
-        target: 'webworker',
+        // Cosmos requires 'importScripts' to be defined for hot-reload to work
+        // This is not available in 'webworker' hence, 'web' only when '--cosmos' is present
+        // Issue logged here: https://github.com/react-cosmos/react-cosmos/issues/1339
+        target: isCosmos ? 'web' : 'webworker',
         mode: mode,
         entry: './src/index.tsx',
         devServer: {
@@ -30,6 +34,10 @@ module.exports = (env, argv) => {
                     options: {
                         transpileOnly: true,
                     },
+                },
+                {
+                    test: /\.css$/i,
+                    use: ['style-loader', 'css-loader'],
                 },
                 {
                     enforce: 'pre',
