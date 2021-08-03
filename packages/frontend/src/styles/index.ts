@@ -1,19 +1,23 @@
 import {createGlobalStyle} from 'styled-components';
-import typography from './typography';
+import * as typography from './typography';
+import * as shadows from './shadows';
+import * as inputs from './input';
+import normalize from 'normalize.css';
 
 export default createGlobalStyle`
+    ${normalize}
+
     :root {
         --primary: 252, 251, 248;
         --secondary: 55, 58, 67;
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
+        --error: 240, 82, 25;
+        --warning: 243, 182, 31;
+        --info: 116, 209, 234;
+        --success: 119, 207, 157;
+        ${shadows.roots}
     }
 
     body {
-        overflow: hidden;
         background-color: rgba(var(--primary), 1);
     }
 
@@ -28,5 +32,6 @@ export default createGlobalStyle`
         }
     }
 
-    ${typography}
+    ${typography.styles}
+    ${inputs.styles}
 `;
