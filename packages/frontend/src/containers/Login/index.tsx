@@ -8,7 +8,7 @@ import {useAuth} from '../../services/Auth';
 import LoadingIcon from 'mdi-react/LoadingIcon';
 
 const Background = (
-    <Embers style={{position: 'absolute'}} color={'#186b18'} height="100vh" width="100vw" />
+    <Embers style={{position: 'absolute'}} color={'#373A43'} height="100vh" width="100vw" />
 );
 
 const Login: React.FC = () => {
