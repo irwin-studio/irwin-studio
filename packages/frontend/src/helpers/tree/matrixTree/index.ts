@@ -3,15 +3,15 @@ import {Tree, TreeEdge, TreeNode} from '..';
 type Callback<T = void> = (change: T) => void;
 
 interface ExportedTree<NodeData, EdgeData> {
-    matrix: Record<string, Record<string, EdgeData>>;
+    matrix: Record<string, Record<string, EdgeData | undefined>>;
     nodes: TreeNode<NodeData>[];
 }
 
 class MatrixTree<NodeData = void, EdgeData = void> implements Tree<NodeData, EdgeData> {
-    nodeCallbacks: Callback<TreeNode<NodeData>>[];
-    edgeCallbacks: Callback<TreeEdge<EdgeData>>[];
+    nodeCallbacks: Callback<TreeNode<NodeData>>[] = [];
+    edgeCallbacks: Callback<TreeEdge<EdgeData>>[] = [];
 
-    matrix: Record<string, Record<string, EdgeData>> = {};
+    matrix: Record<string, Record<string, EdgeData | undefined>> = {};
     nodes: Map<string, TreeNode<NodeData>> = new Map<string, TreeNode<NodeData>>();
 
     constructor(exportString?: string) {
@@ -36,13 +36,13 @@ class MatrixTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
         return [...this.nodes.values()];
     }
 
-    getNode(name: string): TreeNode<NodeData> {
+    getNode(name: string): TreeNode<NodeData> | undefined {
         return this.nodes.get(name);
     }
 
     getEdges(name: string): TreeEdge<EdgeData>[] {
         const from = this.getNode(name);
-        if (!from) return;
+        if (!from) return [];
 
         const edges: TreeEdge<EdgeData>[] = [];
 
@@ -70,14 +70,16 @@ class MatrixTree<NodeData = void, EdgeData = void> implements Tree<NodeData, Edg
             });
         }
 
-        return this.getNode(name);
+        return node;
     }
 
-    update(node: TreeNode<NodeData>): TreeNode<NodeData> {
+    update(node: TreeNode<NodeData>): boolean {
         if (node.name in this.nodes) {
             this.nodes.set(node.name, node);
-            return node;
+            return true;
         }
+
+        return false;
     }
 
     remove(name: string): void {

@@ -71,12 +71,12 @@ describe.each<[string, () => Tree<any, any>]>([
             tree.remove('0');
 
             // cleanup first callback
-            removeCallbacks.pop()();
+            removeCallbacks.pop()?.();
 
             tree.remove('1');
 
             // cleanup second callback
-            removeCallbacks.pop()();
+            removeCallbacks.pop()?.();
 
             expect(callbacks[0]).toBeCalledTimes(1);
             expect(callbacks[1]).toBeCalledTimes(2);
@@ -123,12 +123,12 @@ describe.each<[string, () => Tree<any, any>]>([
             tree.remove('0');
 
             // cleanup first callback
-            removeCallbacks.pop()();
+            removeCallbacks.pop()?.();
 
             tree.remove('1');
 
             // cleanup second callback
-            removeCallbacks.pop()();
+            removeCallbacks.pop()?.();
 
             expect(callbacks[0]).toBeCalledTimes(1);
             expect(callbacks[1]).toBeCalledTimes(2);

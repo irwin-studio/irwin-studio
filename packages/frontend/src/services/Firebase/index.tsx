@@ -19,10 +19,11 @@ export const initializeFirebase = (): typeof Firebase => {
     return Firebase;
 };
 
-const [FirebaseContext, useFirebase] = createService(
+const [FirebaseContext, untypedHook] = createService(
     (props: {firebase?: typeof Firebase}): typeof Firebase => {
         return props.firebase || initializeFirebase();
     },
 );
 
+const useFirebase = untypedHook as () => typeof Firebase;
 export {FirebaseContext, useFirebase};
