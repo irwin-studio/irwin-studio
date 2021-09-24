@@ -50,8 +50,8 @@ const TreeGraph = function TreeGraph<
             tree.link(edge.from, edge.to, {
                 ...edge,
                 route: {
-                    from: tree.getNode(edge.from).location,
-                    to: tree.getNode(edge.to).location,
+                    from: tree.getNode(edge.from)?.location,
+                    to: tree.getNode(edge.to)?.location,
                 },
             });
         });

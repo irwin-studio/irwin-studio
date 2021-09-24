@@ -5,14 +5,16 @@
     "jsx": "react",
     "declaration": true,
     "module": "ESNext",
+    "target": "es2018", // "target": "es2018",
     "moduleResolution": "node",
     "noEmit": true,
+    "strict": true,
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "resolveJsonModule": true,
     "removeComments": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "target": "es2018"
   },
+  "exclude": ["node_modules", "dist/"]
 }
