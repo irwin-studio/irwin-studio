@@ -15,6 +15,7 @@ interface BreakpointsAPI {
 }
 
 export const DEFAULT_BREAKPOINTS = {
+    unknown: 0,
     sm: 640,
     md: 768,
     lg: 1024,
@@ -24,9 +25,12 @@ export const DEFAULT_BREAKPOINTS = {
 
 export function useBreakpointsAPI(breakpoints: Breakpoints = DEFAULT_BREAKPOINTS): BreakpointsAPI {
     const [sortedBreakpoints, setSortedBreakpoints] = useState<Breakpoint[]>([]);
-    const [currentBreakpoint, setCurrentBreakpoint] = useState<Breakpoint>();
     const [currentHeight, setCurrentHeight] = useState(window.innerHeight);
     const [currentWidth, setCurrentWidth] = useState(window.innerWidth);
+    const [currentBreakpoint, setCurrentBreakpoint] = useState<Breakpoint>({
+        name: 'unknown',
+        value: 0,
+    });
 
     /*
      * if and when the provided breakpoints change - re-sort the values
@@ -52,7 +56,12 @@ export function useBreakpointsAPI(breakpoints: Breakpoints = DEFAULT_BREAKPOINTS
             );
         });
 
-        setCurrentBreakpoint(breakpoint);
+        setCurrentBreakpoint(
+            breakpoint || {
+                name: 'unknown',
+                value: 0,
+            },
+        );
     }, [sortedBreakpoints, currentWidth]);
 
     useEffect(() => {

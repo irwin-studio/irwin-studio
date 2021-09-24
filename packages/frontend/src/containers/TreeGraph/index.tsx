@@ -69,21 +69,21 @@ const Graph: React.FC = () => {
     };
 
     useEffect(() => {
-        const source = new Observable(observer => {
+        const source$ = new Observable(observer => {
             return tree.onNodeChange(() => observer.next());
         });
 
         const subscriptions = [
-            source // prevent page reload until saved
+            source$ // prevent page reload until saved
                 .pipe(throttleTime(saveThrottleTime, undefined, {leading: true}))
                 .subscribe(() => {
                     window.onbeforeunload = () => true;
                 }),
-            source // save and re-enable page reload
+            source$ // save and re-enable page reload
                 .pipe(throttleTime(saveThrottleTime, undefined, {trailing: true}))
                 .subscribe(() => {
                     history.push(`${window.location.pathname}?hash=${tree.export()}`);
-                    window.onbeforeunload = undefined;
+                    window.onbeforeunload = () => undefined;
                 }),
         ];
 

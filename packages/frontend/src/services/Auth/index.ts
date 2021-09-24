@@ -13,7 +13,7 @@ export type LOGIN_METHOD = 'REDIRECT' | 'POPUP';
 type LoginAction = (provider: AuthProvider) => Promise<void | Firebase.auth.UserCredential>;
 
 export interface AuthAPI {
-    user: Firebase.User;
+    user: Firebase.User | undefined;
     logout: () => void;
     login: (providerKey: LOGIN_PROVIDER, method?: LOGIN_METHOD) => void;
 }
@@ -23,7 +23,7 @@ function useAuthAPI(): AuthAPI {
     const [user, setUser] = useState<Firebase.User | undefined>(undefined);
 
     firebase.auth().onAuthStateChanged(user => {
-        setUser(user);
+        if (user) setUser(user);
     });
 
     const providers: Record<LOGIN_PROVIDER, AuthProvider> = {
@@ -31,8 +31,8 @@ function useAuthAPI(): AuthAPI {
     };
 
     const loginMethods: Record<LOGIN_METHOD, LoginAction> = {
-        REDIRECT: (provider: AuthProvider) => firebase.auth().signInWithRedirect(provider),
-        POPUP: (provider: AuthProvider) => firebase.auth().signInWithPopup(provider),
+        REDIRECT: (provider: AuthProvider) => firebase?.auth().signInWithRedirect(provider),
+        POPUP: (provider: AuthProvider) => firebase?.auth().signInWithPopup(provider),
     };
 
     const login = (providerKey: LOGIN_PROVIDER, method: LOGIN_METHOD = 'REDIRECT') => {
@@ -43,7 +43,7 @@ function useAuthAPI(): AuthAPI {
     };
 
     const logout = () => {
-        firebase.auth().signOut();
+        firebase?.auth().signOut();
     };
 
     return {
@@ -53,6 +53,7 @@ function useAuthAPI(): AuthAPI {
     };
 }
 
-const [AuthContext, useAuth] = createService(useAuthAPI);
+const [AuthContext, untypedHook] = createService(useAuthAPI);
 
+const useAuth = untypedHook as () => AuthAPI;
 export {AuthContext, useAuth};

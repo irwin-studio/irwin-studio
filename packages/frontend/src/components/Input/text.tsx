@@ -38,11 +38,11 @@ const Text: React.FC<Props> = props => {
     if (typeof size === 'number') {
         (style as any)['--scale'] = size;
     } else {
-        classes.push(size);
+        if (size) classes.push(size);
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(event.target.value);
+        onChange?.(event.target.value);
     };
 
     return (

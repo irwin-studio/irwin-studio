@@ -1,6 +1,4 @@
-import {DELIMETER, Tree, TreeEdge, TreeNode} from '..';
-
-type Callback<T = void> = (change?: T) => void;
+import {Callback, DELIMETER, Tree, TreeEdge, TreeNode} from '..';
 
 interface ExportedTree<NodeData, EdgeData> {
     edges: TreeEdge<EdgeData>[];
@@ -36,7 +34,7 @@ class LinkedTree<NodeData = {}, EdgeData = {}> implements Tree<NodeData, EdgeDat
         return [...this.nodes.values()];
     }
 
-    getNode(name: string): TreeNode<NodeData> {
+    getNode(name: string): TreeNode<NodeData> | undefined {
         return this.nodes.get(name);
     }
 
@@ -52,8 +50,9 @@ class LinkedTree<NodeData = {}, EdgeData = {}> implements Tree<NodeData, EdgeDat
         if (this.nodes.get(node.name) !== node) {
             this.nodes.set(node.name, node);
             this.nodeCallbacks.forEach(callback => callback(node));
-            return this.getNode(node.name);
         }
+
+        return node;
     }
 
     remove(name: string): TreeNode<NodeData> | undefined {
