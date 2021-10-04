@@ -23,7 +23,7 @@ export const DEFAULT_BREAKPOINTS = {
     '2xl': 1536,
 };
 
-export function useBreakpointsAPI(breakpoints: Breakpoints = DEFAULT_BREAKPOINTS): BreakpointsAPI {
+function useBreakpointsAPI(breakpoints: Breakpoints = DEFAULT_BREAKPOINTS): BreakpointsAPI {
     const [sortedBreakpoints, setSortedBreakpoints] = useState<Breakpoint[]>([]);
     const [currentHeight, setCurrentHeight] = useState(window.innerHeight);
     const [currentWidth, setCurrentWidth] = useState(window.innerWidth);
@@ -81,3 +81,5 @@ export function useBreakpointsAPI(breakpoints: Breakpoints = DEFAULT_BREAKPOINTS
         breakpoints,
     };
 }
+
+export {useBreakpointsAPI};
