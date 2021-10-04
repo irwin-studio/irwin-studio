@@ -5,7 +5,7 @@
     "jsx": "react",
     "declaration": true,
     "module": "ESNext",
-    "target": "es2018", // "target": "es2018",
+    "target": "es2018",
     "moduleResolution": "node",
     "noEmit": true,
     "strict": true,
@@ -15,6 +15,6 @@
     "removeComments": true,
     "skipLibCheck": true,
     "sourceMap": true,
+    "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"]
   },
-  "exclude": ["node_modules", "dist/"]
 }

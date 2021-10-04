@@ -17,6 +17,9 @@ module.exports = (env, argv) => {
         target: isCosmos ? 'web' : 'webworker',
         mode: mode,
         entry: './src/index.tsx',
+        externals: {
+            types: ['@webgpu/types'],
+        },
         devServer: {
             historyApiFallback: true,
             host: '0.0.0.0',
@@ -38,6 +41,10 @@ module.exports = (env, argv) => {
                 {
                     test: /\.css$/i,
                     use: ['style-loader', 'css-loader'],
+                },
+                {
+                    test: /\.wgsl$/i,
+                    use: ['raw-loader'],
                 },
                 {
                     enforce: 'pre',
