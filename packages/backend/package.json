@@ -1,6 +1,6 @@
 {
   "name": "irwin-studio-backend",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Backend for Irwin Studio",
   "main": "src/index.ts",
   "scripts": {
