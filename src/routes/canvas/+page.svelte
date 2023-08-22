@@ -5,7 +5,7 @@
 	import { Vec2 } from '$lib/Renderer/vec2';
 	import { Engine } from '$lib/Engine';
 	import { Application } from '$lib/Application';
-	import { MyFirstApplication } from '$lib/Application/myFirst';
+	import { TreeApp } from '$lib/Application/myFirst';
 
 	let renderer: Renderer;
 
@@ -14,7 +14,7 @@
   let info: string = ""
 
 	onMount(() => {
-		const application = new MyFirstApplication()
+		const application = new TreeApp()
 		renderer = new Renderer(canvas);
 		const engine = new Engine(renderer, application);
 

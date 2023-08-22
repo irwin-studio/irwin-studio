@@ -1,5 +1,5 @@
 import type { RendererCanvasMetaData } from '..';
-import { Shape, type IShape, type ShapeConfig } from '../shape';
+import { Shape, type ShapeConfig } from '../shape';
 import { Vec2 } from '../vec2';
 
 function getLinePosition(index: number, cellSize: Vec2, relativePosition: Vec2, canvasSize: Vec2, axis: 'x' | 'y') {
@@ -9,14 +9,14 @@ function getLinePosition(index: number, cellSize: Vec2, relativePosition: Vec2, 
   return wrapped - (wrapped % absolute)
 }
 
-export class Grid<UStates extends string> extends Shape<UStates> implements IShape<UStates> {
+export class Grid<UStates extends string> extends Shape {
   constructor(
     public cellWidth: number,
     public cellHeight: number,
     public maxX: number | undefined = undefined,
     public maxY: number | undefined = undefined,
     state?: UStates,
-    config?: ShapeConfig<UStates>
+    config?: ShapeConfig
   ) {
     super(new Vec2(0, 0), state, config)
   }

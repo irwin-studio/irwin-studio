@@ -1,11 +1,11 @@
 import type { RendererCanvasMetaData } from '..';
-import { Shape, type IShape, type ShapeConfig } from '../shape';
+import { Shape, type ShapeConfig } from '../shape';
 import { Vec2 } from '../vec2';
 
-export class Circle<UStates extends string> extends Shape<UStates> implements IShape<UStates> {
+export class Circle extends Shape {
   radius: number;
 
-  constructor(radius: number, x: number, y: number, state?: UStates, config?: ShapeConfig<UStates>) {
+  constructor(radius: number, x: number, y: number, state?: string, config?: ShapeConfig) {
     super(new Vec2(x, y), state, config)
     this.radius = radius;
   }

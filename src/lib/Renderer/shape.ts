@@ -1,4 +1,4 @@
-import type { RendererCanvasMetaData } from '.';
+import type { CoorindateContext, RendererCanvasMetaData } from '.';
 import { Info } from './info';
 import type { Vec2, MaybeVec2 } from './vec2';
 
@@ -7,21 +7,14 @@ export type ShapeTheme = {
   fillColor: string;
   strokeWidth: number;
 }
- 
-export type ShapeThemes<T extends string | undefined = undefined> =
-  Record<'default', ShapeTheme> & (
-    T extends undefined
-      ? Record<'default', ShapeTheme>
-      : Partial<Record<NonNullable<T>, ShapeTheme | undefined>>
-  )
 
-export type ShapeConfig<States extends string> = {
-  stage?: 'SCREEN' | 'CANVAS'
+export type ShapeConfig = {
+  stage?: CoorindateContext
   parallax?: number
-  themes?: ShapeThemes<D<States>>
+  themes?: Record<string, ShapeTheme>
 }
 
-export const DEFAULT_CONFIG: ShapeConfig<'default'> = {
+export const DEFAULT_CONFIG: ShapeConfig = {
   stage: 'CANVAS',
   parallax: 1,
   themes: {
@@ -33,21 +26,19 @@ export const DEFAULT_CONFIG: ShapeConfig<'default'> = {
   }
 }
 
-type D<UTheme extends string> = 'default' | UTheme;
-
 /**
  * Where UStates is a string union of possible states the shape can have
  */
-export class Shape<UThemes extends string> extends Info {
+export abstract class Shape extends Info {
   /**
    * the position relative to the origin (0, 0) - just X,Y coords.
    * This does not account for any screenspace offset
    * */
   position: Vec2;
-  config: ShapeConfig<D<UThemes>>
-  theme: D<UThemes>
+  config: ShapeConfig
+  theme: string
 
-  constructor(position: Vec2, state?: D<UThemes>, config?: ShapeConfig<UThemes>) {
+  constructor(position: Vec2, state?: string, config?: ShapeConfig) {
     super();
 
     this.theme = state ?? 'default';
@@ -56,6 +47,8 @@ export class Shape<UThemes extends string> extends Info {
     this.config.themes = this.config.themes ?? DEFAULT_CONFIG.themes
     this.config.parallax = config?.parallax ?? 1
   }
+
+  abstract draw(context: CanvasRenderingContext2D, metadata: RendererCanvasMetaData): void;
 
   setPos(vec2: MaybeVec2) {
     this.position.moveTo(vec2);
@@ -70,11 +63,7 @@ export class Shape<UThemes extends string> extends Info {
     }
   }
 
-  setTheme(theme: D<UThemes>) {
+  setTheme(theme: string) {
     this.theme = theme
   }
-}
-
-export interface IShape<UStates extends string = string> extends Shape<UStates> {
-  draw(context: CanvasRenderingContext2D, metadata: RendererCanvasMetaData): void;
 }

@@ -22,7 +22,7 @@ export class Vec2 {
 
   static coerce(value: MaybeVec2): Vec2 {
     if (Array.isArray(value)) return new Vec2(...value)
-    if (value instanceof Vec2) return value
+    if (value instanceof Vec2) return value.clone()
     if (typeof value === 'number') return new Vec2(value, value);
     throw new Error(`Failed to coerce ${typeof value} to Vec2`)
   }
@@ -66,6 +66,18 @@ export class Vec2 {
   max(vec2: MaybeVec2): Vec2 {
     this._x = Math.max(this._x, Vec2.coerce(vec2)._x)
     this._y = Math.max(this._y, Vec2.coerce(vec2)._y)
+    return this
+  }
+
+  pow(vec2: MaybeVec2): Vec2 {
+    this._x = Math.pow(this._x, Vec2.coerce(vec2)._x)
+    this._y = Math.pow(this._y, Vec2.coerce(vec2)._y)
+    return this
+  }
+
+  flip(): Vec2 {
+    this._x = this._y
+    this._y = this._x
     return this
   }
 
