@@ -43,7 +43,7 @@ export class Grid<UStates extends string> extends Shape {
     // Max lines defaults to Infinity when undefined, and the canvas does not like Infinite values
     // so we clamp them to the screen's borders
     const drawableMin = minPoint.clone().max(0)
-    const drawableMax = maxPoint.clone().min(meta.canvasSize.x)
+    const drawableMax = maxPoint.clone().min([meta.canvasSize.x, meta.canvasSize.y])
 
     // generate and filter all visible y values
     const yValues: number[] = Array.from({ length: lineCounts.y })
