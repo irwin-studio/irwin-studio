@@ -5,8 +5,7 @@ import { Layer } from '$lib/Renderer/layer';
 import type { ShapeConfig } from '$lib/Renderer/shape';
 import { Grid } from '$lib/Renderer/shapes/grid';
 
-type THEMES = 'MAIN_GRID' | 'SECONDARY_GRID' | 'RED_DOT'
-const themes: ShapeConfig<THEMES>['themes'] = {
+const themes: ShapeConfig['themes'] = {
   default: {
     strokeWidth: 1,
     fillColor: 'blue',
