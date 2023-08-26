@@ -1,6 +1,6 @@
 import type { CoorindateContext, RenderMetaData } from '.';
 import { Info } from './info';
-import type { Vec2, MaybeVec2 } from './vec2';
+import { Vec2, type MaybeVec2 } from './vec2';
 
 export type ShapeTheme = {
   strokeColor: string;
@@ -38,11 +38,11 @@ export abstract class Shape extends Info {
   config: ShapeConfig
   theme: string
 
-  constructor(position: Vec2, state?: string, config?: ShapeConfig) {
+  constructor(position: MaybeVec2, state?: string, config?: ShapeConfig) {
     super();
 
     this.theme = state ?? 'default';
-    this.position = position;
+    this.position = Vec2.coerce(position);
     this.config = config ?? DEFAULT_CONFIG
     this.config.themes = this.config.themes ?? DEFAULT_CONFIG.themes
     this.config.parallax = config?.parallax ?? 1
