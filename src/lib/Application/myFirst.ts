@@ -29,7 +29,6 @@ function createCircle(position: Vec2) {
 export class TreeApp extends Application {
   private latestId = 0
 
-  previousShape: Shape | undefined
   previousNode: Node | undefined
 
   nodes: Set<Node> = new Set<Node>()
@@ -49,27 +48,14 @@ export class TreeApp extends Application {
 
   private addNode(vec2: MaybeVec2) {
     const nodeLocation = Vec2.coerce(vec2)
-    const newShape = createCircle(nodeLocation)
-    this.layer.addShape(newShape)
-
-    const node = new Node(this.generateNewId())
-    this.nodes.add(node)
+    
+    const node = new Node(this.generateNewId(), nodeLocation)
+    this.layer.addShape(node)
 
     if (this.previousNode) {
       node.connectTo(this.previousNode)
     }
     this.previousNode = node
-
-    if (this.previousShape) {
-      const line = Line.Between(
-        this.previousShape.position,
-        newShape.position
-      )
-      line.config.parallax = 1.2
-
-      this.layer.addShape(line)
-    }
-    this.previousShape = newShape
   }
 
   getOnDragHandler(): ReturnType<Application['getOnDragHandler']> {
