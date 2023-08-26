@@ -4,18 +4,11 @@ import { Info } from './info';
 import { onWheel } from '$lib/util/onWheel';
 import { onKey } from '$lib/util/onKey';
 import { onMouseMove } from '$lib/util/onMouseMove';
-import { Layer } from './layer';
 import { Circle } from '$lib/shapes/circle';
+import type { Layer } from './layer';
 
 export type Handler<I = never, O = void> = (input: I) => O
 export type CoorindateContext = 'SCREEN' | 'CANVAS'
-
-const debug_layer = new Layer()
-debug_layer.addShape(
-  new Circle(5, 0, 0, 'default', { parallax: 1, themes: { default: { fillColor: "red", strokeColor: "red", strokeWidth: 3 } }}),
-  new Circle(5, 0, 0, 'default', { parallax: 1.1, themes: { default: { fillColor: "blue", strokeColor: "blue", strokeWidth: 3 } }}),
-  new Circle(5, 0, 0, 'default', { parallax: 1.3, themes: { default: { fillColor: "purple", strokeColor: "purple", strokeWidth: 3 } }}),
-)
 
 export interface RenderMetaData {
   relativePosition: Vec2;
@@ -88,8 +81,6 @@ export class Renderer extends Info {
     this.context = context;
     this._originShift = new Vec2(0, 0)
     this.registerHandlers()
-
-    this.layers.add(debug_layer)
   }
 
   private registerHandlers() {
