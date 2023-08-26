@@ -6,7 +6,7 @@ export interface OnKeyMeta {
 
 export function onKey(key: string | RegExp, callback: (event: KeyboardEvent, meta: OnKeyMeta) => void, direction: KeyDirection = 'DOWN'): () => void {
   const upHandler = (event: KeyboardEvent) => {
-    if (direction === 'UP' || direction === "EITHER") {
+    if (direction === "DOWN") {
       return
     }
 
@@ -29,11 +29,10 @@ export function onKey(key: string | RegExp, callback: (event: KeyboardEvent, met
   }
 
   const downHandler = (event: KeyboardEvent) => {
-    if (direction === 'DOWN' || direction === "EITHER") {
+    if (direction === "UP") {
       return
     }
 
-    console.log(event.key)
     if (event.key) {
       callback(event, {
         ctrlKey: event.ctrlKey,

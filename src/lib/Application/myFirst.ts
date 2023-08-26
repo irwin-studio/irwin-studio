@@ -1,41 +1,61 @@
-import type { ShapeConfig, Shape } from '$lib/Renderer/shape';
+import type { ShapeConfig } from '$lib/Renderer/shape';
 import { Vec2, type MaybeVec2 } from '$lib/Renderer/vec2';
-import { Circle } from '$lib/shapes/circle';
 import { Line } from '$lib/shapes/line';
 import { Application } from '.';
 import { Node } from './node';
 
 const config: ShapeConfig = {
-  parallax: 1,
-  stage: 'CANVAS',
   themes: {
     default: {
-      strokeColor: 'black',
-      fillColor: 'white',
-      strokeWidth: 1
+      fillColor: "white",
+      strokeColor: "black",
+      strokeWidth: 2,
     },
-    highlight: {
-      strokeColor: 'yellow',
-      fillColor: 'black',
-      strokeWidth: 1
+    highlighted: {
+      fillColor: "lightgreen",
+      strokeColor: "darkgreen",
+      strokeWidth: 2,
+    },
+    invisible: {
+      fillColor: "transparent",
+      strokeColor: "transparent",
+      strokeWidth: 0,
+    },
+    template_line: {
+      fillColor: "red",
+      strokeColor: "red",
+      strokeWidth: 2,
     }
   }
 }
 
-function createCircle(position: Vec2) {
-  return new Circle(5, position.x, position.y, 'default', config)
-}
-
 export class TreeApp extends Application {
   private latestId = 0
+  private lastMousePos = new Vec2(0,0)
+  private adding = false
 
-  previousNode: Node | undefined
-
+  templateLine: Line;
+  hoveredNode: Node | undefined;
+  selectedNode: Node | undefined;
   nodes: Set<Node> = new Set<Node>()
   step = 0;
 
   constructor() {
     super()
+
+    this.templateLine = new Line(new Vec2(0, 0), 0, 0, 'invisible', config)
+    this.layer.addShape(this.templateLine)
+    this.templateLine.setTheme('invisible')
+
+    this.addNode(new Vec2(0,0))
+    this.addNode(new Vec2(0,100))
+    this.addNode(new Vec2(0,200))
+    this.addNode(new Vec2(0,-100))
+    this.addNode(new Vec2(0,-200))
+    this.addNode(new Vec2(100, 0))
+    this.addNode(new Vec2(200, 0))
+    this.addNode(new Vec2(-100, 0))
+    this.addNode(new Vec2(-200, 0))
   }
 
   performNextStep(): void {
@@ -46,16 +66,62 @@ export class TreeApp extends Application {
     return String(this.latestId++)
   }
 
-  private addNode(vec2: MaybeVec2) {
+  private addNode(vec2: MaybeVec2): Node {
     const nodeLocation = Vec2.coerce(vec2)
     
-    const node = new Node(this.generateNewId(), nodeLocation)
+    const node = new Node(this.generateNewId(), nodeLocation, config)
     this.layer.addShape(node)
+    this.nodes.add(node)
+    return node;
+  }
 
-    if (this.previousNode) {
-      node.connectTo(this.previousNode)
+  private onNodeClick(node: Node) {
+    if (this.selectedNode) {
+      if (this.adding) {
+        this.selectedNode.connectTo(node)
+      }
+
+      this.selectNode(node)
+    } else {
+      this.selectNode(node)
     }
-    this.previousNode = node
+  }
+
+  private onNodeHover(node: Node | undefined) {
+    if (this.hoveredNode === node) return
+    if (this.hoveredNode && this.hoveredNode !== this.selectedNode) {
+      this.hoveredNode.setTheme('default')
+      this.hoveredNode = undefined
+    }
+
+    if (!node) return
+    this.hoveredNode = node
+    node.setTheme('highlighted')
+  }
+
+  private getNodeAt(vec2: MaybeVec2): Node | undefined {
+    return [...this.nodes].reverse().find(node => node.isWithin(Vec2.coerce(vec2)))
+  }
+
+  selectNode(node: Node) {
+    if (!this.nodes.has(node)) return
+
+    if (this.selectedNode) {
+      this.deselectNode()
+    }
+
+    this.selectedNode = node
+    this.templateLine.setPos(node.position)
+    this.templateLine.pointTo(this.lastMousePos)
+    node.setTheme('highlighted')
+  }
+
+  deselectNode(node: Node | undefined = this.selectedNode) {
+    if (!node) return
+    if (this.nodes.has(node)) {
+      this.selectedNode = undefined
+      node.setTheme('default')
+    }
   }
 
   getOnDragHandler(): ReturnType<Application['getOnDragHandler']> {
@@ -66,7 +132,13 @@ export class TreeApp extends Application {
 
   getOnKeyDownHandler(): ReturnType<Application['getOnKeyDownHandler']> {
     return ([event, meta]) => {
-      this.nodes.forEach(node => node)
+      const show = !!this.selectedNode && meta.direction === 'DOWN' && event.key === "Shift"
+      this.templateLine.setTheme(show ? "template_line" : "invisible")
+      this.adding = show;
+
+      if (event.key === "Escape") {
+        this.deselectNode()
+      }
     }
   }
 
@@ -76,9 +148,25 @@ export class TreeApp extends Application {
     }
   }
 
+  getOnMouseMoveHandler(): ReturnType<Application['getOnWheelHandler']> {
+    return ([event, meta]) => {
+      this.lastMousePos = meta.relativePosition;
+      this.templateLine.pointTo(meta.relativePosition)
+      this.onNodeHover(this.getNodeAt(meta.relativePosition))
+    } 
+  }
+
   getOnClickHandler(): ReturnType<Application['getOnClickHandler']> {
     return ([event, meta]) => {
-      this.addNode(meta.relativePosition) 
+      const clicked = this.getNodeAt(meta.relativePosition)
+      if (clicked) {
+          this.onNodeClick(clicked)
+      } else {
+        if (!this.adding) {
+          if (!this.selectedNode) this.addNode(meta.relativePosition)
+          this.deselectNode()
+        }
+      }
     }
   }
 }

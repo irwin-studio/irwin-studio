@@ -2,13 +2,20 @@ import { Vec2, type MaybeVec2 } from './vec2';
 import { onMouseDrag } from '$lib/util/onMouseDrag';
 import { Info } from './info';
 import { onWheel } from '$lib/util/onWheel';
-import { onKey } from '$lib/util/onKey';
+import { onKey, type OnKeyMeta } from '$lib/util/onKey';
 import { onMouseMove } from '$lib/util/onMouseMove';
-import { Circle } from '$lib/shapes/circle';
 import type { Layer } from './layer';
+import { onClick } from '$lib/util/onClick';
 
 export type Handler<I = never, O = void> = (input: I) => O
 export type CoorindateContext = 'SCREEN' | 'CANVAS'
+const FPS_AVG_OVER = 50
+
+function runCallbacks<Args extends any[]>(callbacks: Set<(...args: Args) => void>) {
+  return (...args: Args) => {
+    callbacks.forEach(cb => cb(...args))
+  }
+}
 
 export interface RenderMetaData {
   relativePosition: Vec2;
@@ -23,10 +30,14 @@ export interface EventMetaData {
 }
 
 export class Renderer extends Info {
+  private _cleanups: Set<() => void> = new Set()
+
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
   
   layers: Set<Layer> = new Set<Layer>();
+
+  private _renderTimes: number[] = new Array(FPS_AVG_OVER).fill(0)
 
   /** Every coordinate must add this number to center itself on the canvas  */
   private _screenCenterOffset: Vec2 = new Vec2(0, 0)
@@ -65,8 +76,9 @@ export class Renderer extends Info {
   callbacks = {
     onClick: new Set<Handler<[MouseEvent, EventMetaData]>>(),
     onDrag: new Set<Handler<[MouseEvent, EventMetaData]>>(),
-    onKeyDown: new Set<Handler<[KeyboardEvent, EventMetaData]>>(),
+    onKeyDown: new Set<Handler<[KeyboardEvent, EventMetaData & OnKeyMeta]>>(),
     onWheel: new Set<Handler<[MouseEvent, EventMetaData]>>(),
+    onMouseMove: new Set<Handler<[MouseEvent, EventMetaData]>>(),
   }
 
   constructor(canvas: HTMLCanvasElement) {
@@ -86,55 +98,17 @@ export class Renderer extends Info {
   private registerHandlers() {
     let cancelNext = false;
 
-    this.canvas.addEventListener('click', (event: MouseEvent) => {
-      if (cancelNext) {
-        cancelNext = false
-        return
-      };
-
-      if (event.ctrlKey) {
-        this.moveOriginTo([0, 0])
-        return
-      }
-
-      const meta = this.getEventMeta(new Vec2(event.clientX, event.clientY))
-      this.callbacks.onClick.forEach(callback => {
-        callback([event, meta])
-      })
-    })
-
-    onMouseDrag(this.canvas, (event) => {
+    const moveOriginOnDrag = (event: MouseEvent) => {
       cancelNext = true
       const pos = this.scaleAbsolutePosition(new Vec2(event.movementX, event.movementY))
       this.moveOriginBy(pos.x, pos.y);
-    })
+    }
 
-    onMouseDrag(this.canvas, (event: MouseEvent) => {
-      const meta = this.getEventMeta(new Vec2(event.clientX, event.clientY))
-      this.callbacks.onDrag.forEach(callback => {
-        callback([event, meta])
-      })
-    })
-
-    onMouseMove((event) => {
+    const updateCursorPos = (event: MouseEvent) => {
       this.addInfo("mouse", new Vec2(event.clientX, event.clientY).toString())
-    })
+    }
 
-    onKey(/.*/, (event: KeyboardEvent) => {
-      const meta = this.getEventMeta(this.mousePosition)
-      this.callbacks.onKeyDown.forEach(callback => {
-        callback([event, meta])
-      })
-    }, 'DOWN')
-
-    onWheel(this.canvas, (event: MouseEvent) => {
-      const meta = this.getEventMeta(this.mousePosition)
-      this.callbacks.onWheel.forEach(callback => {
-        callback([event, meta])
-      })
-    });
-
-    onWheel(this.canvas, async (event) => {
+    const handleZoom = (event: WheelEvent) => {
       event.stopPropagation()
       event.stopImmediatePropagation()
       event.preventDefault()
@@ -151,7 +125,57 @@ export class Renderer extends Info {
 
       const diff = screenSpaceEnd.subtract(screenSpaceStart)
       this.moveOriginBy(diff.x, diff.y)
-    })
+    }
+
+    [
+      onMouseDrag(this.canvas, moveOriginOnDrag),
+      onMouseMove(updateCursorPos),
+      onWheel(this.canvas, handleZoom),
+
+      onClick(this.canvas, (event: MouseEvent) => {
+        if (cancelNext) {
+          cancelNext = false
+          return
+        };
+  
+        if (event.ctrlKey) {
+          this.moveOriginTo([0, 0])
+          return
+        }
+
+        const meta = this.getEventMeta([event.clientX, event.clientY])
+        runCallbacks(this.callbacks.onClick)([event, meta])
+      }),
+      onMouseDrag(this.canvas, (event: MouseEvent) => {
+        const meta = this.getEventMeta([event.clientX, event.clientY])
+        runCallbacks(this.callbacks.onDrag)([event, meta])
+      }),
+      onKey(/.*/, (event: KeyboardEvent, keyEventMeta) => {
+        const meta = this.getEventMeta(this.mousePosition)
+        runCallbacks(this.callbacks.onKeyDown)([event, {
+          ...meta,
+          ...keyEventMeta
+        }])
+      }, 'EITHER'),
+      onWheel(this.canvas, (event: MouseEvent) => {
+        const meta = this.getEventMeta([event.clientX, event.clientY])
+        runCallbacks(this.callbacks.onWheel)([event, meta])
+      }),
+      onMouseMove((event) => {
+        const meta = this.getEventMeta([event.clientX, event.clientY])
+        runCallbacks(this.callbacks.onMouseMove)([event, meta])
+      })
+    ].forEach(cb => this._cleanups.add(cb))
+  }
+
+  tearDown() {
+    // console.log('tearing down')
+    this._cleanups.forEach(cb => cb())
+
+    this.callbacks.onClick.clear()
+    this.callbacks.onDrag.clear()
+    this.callbacks.onKeyDown.clear()
+    this.callbacks.onWheel.clear()
   }
 
   /**
@@ -176,10 +200,13 @@ export class Renderer extends Info {
    */
 
   render() {
+    this._renderTimes.push(performance.now())
+    this._renderTimes.shift()
+
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.layers.forEach(layer => {
       layer.getShapes().forEach(shape => {
-        const meta = this.getRenderMeta(shape.position, shape.config.parallax)
+        const meta = this.getRenderMeta(shape.position)
         shape.draw(this.context, meta)
       })
     })
@@ -190,14 +217,7 @@ export class Renderer extends Info {
    */
 
   /** scales and transaltes the given screen coordinates */
-  // translateRelativePosition(vec2: MaybeVec2, parallax = 1): Vec2 {
-  //   return Vec2.coerce(vec2)
-  //     .add(this._originShift)
-  //     .add(this._screenCenterOffset)
-  // }
-
-  /** scales and transaltes the given screen coordinates */
-  translateRelativePosition(vec2: MaybeVec2, parallax = 1): Vec2 {
+  translateRelativePosition(vec2: MaybeVec2): Vec2 {
     const start = Vec2.coerce(vec2)
     return start.clone()
       .add(this._originShift.clone())
@@ -210,7 +230,7 @@ export class Renderer extends Info {
       .subtract(this._screenCenterOffset.clone().divide(this.renderScale))
   }
 
-  scaleRelativePosition(vec2: MaybeVec2, parallax = 1): Vec2 {
+  scaleRelativePosition(vec2: MaybeVec2): Vec2 {
     return Vec2.coerce(vec2)
       .multiply(this.renderScale)
   }
@@ -228,19 +248,19 @@ export class Renderer extends Info {
     return this.scaleRelativePosition(this.translateRelativePosition(start))
   }
 
-  private getRenderMeta(position: Vec2, parallax: number = 1): RenderMetaData {
+  private getRenderMeta(position: Vec2): RenderMetaData {
     return {
       canvasSize: this.canvasSize,
       scale: this.renderScale,
-      relativePosition: this.scaleRelativePosition(this.translateRelativePosition(position, parallax), parallax),
+      relativePosition: this.scaleRelativePosition(this.translateRelativePosition(position)),
       absolutePosition: position,
     }
   }
 
-  private getEventMeta(position: Vec2): EventMetaData {
+  private getEventMeta(position: MaybeVec2): EventMetaData {
     return {
-      relativePosition: this.screenSpaceToCanvas(position),
-      absolutePosition: position,
+      relativePosition: this.screenSpaceToCanvas(Vec2.coerce(position)),
+      absolutePosition: Vec2.coerce(position),
     }
   }
 
@@ -248,13 +268,29 @@ export class Renderer extends Info {
     const ownInfo = super.getInfo()
 
     return {
-      canvasToScreen: this.canvasToScreenspace([0,0]).toString(),
       screenspaceOffset: this._screenCenterOffset.toString(),
       originShift: this._originShift.toString(),
       scale: `${this.renderScale}`,
       mouse: this.mousePosition.toString(),
+      fps: this.getFps(),
       ...ownInfo
     }
+  }
+
+  getFps(): number {
+    const nonZero = this._renderTimes.filter(v => v !== 0)
+    const diffs = nonZero.map((newest, index) => {
+      const older = nonZero[index + 1] ?? newest
+      return older - newest
+    })
+
+    const diffTotal = diffs.reduce((acc, a) => acc + a, 0)
+    const avgDiff = diffTotal / nonZero.length
+
+    const diff = avgDiff
+    const jitter = 100
+    const unrounded = 1000 / diff
+    return Math.round(unrounded * jitter) / jitter ;
   }
 
   /**
@@ -271,7 +307,7 @@ export class Renderer extends Info {
     return () => this.callbacks.onDrag.delete(handler)
   }
 
-  onKeyDown(handler: Handler<[KeyboardEvent, EventMetaData]>) {
+  onKeyDown(handler: Handler<[KeyboardEvent, EventMetaData & OnKeyMeta]>) {
     this.callbacks.onKeyDown.add(handler)
     return () => this.callbacks.onKeyDown.delete(handler)
   }
@@ -279,5 +315,10 @@ export class Renderer extends Info {
   onWheel(handler: Handler<[MouseEvent, EventMetaData]>) {
     this.callbacks.onWheel.add(handler)
     return () => this.callbacks.onWheel.delete(handler)
+  }
+
+  onMouseMove(handler: Handler<[MouseEvent, EventMetaData]>) {
+    this.callbacks.onMouseMove.add(handler)
+    return () => this.callbacks.onMouseMove.delete(handler)
   }
 }

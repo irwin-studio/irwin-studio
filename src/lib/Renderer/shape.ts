@@ -49,6 +49,7 @@ export abstract class Shape extends Info {
   }
 
   abstract draw(context: CanvasRenderingContext2D, metadata: RenderMetaData): void;
+  abstract isWithin(vec2: Vec2): boolean;
 
   setPos(vec2: MaybeVec2) {
     this.position.moveTo(vec2);
@@ -66,4 +67,6 @@ export abstract class Shape extends Info {
   setTheme(theme: string) {
     this.theme = theme
   }
+
+  
 }
