@@ -1,6 +1,6 @@
-import type { RendererCanvasMetaData } from '..';
-import { Shape, type ShapeConfig } from '../shape';
-import { Vec2 } from '../vec2';
+import type { RenderMetaData } from '$lib/Renderer'
+import { Shape, type ShapeConfig } from '$lib/Renderer/shape'
+import { Vec2 } from '$lib/Renderer/vec2'
 
 function getLinePosition(index: number, cellSize: Vec2, relativePosition: Vec2, canvasSize: Vec2, axis: 'x' | 'y') {
   const start = index * cellSize[axis]
@@ -21,7 +21,7 @@ export class Grid<UStates extends string> extends Shape {
     super(new Vec2(0, 0), state, config)
   }
 
-  draw(ctx: CanvasRenderingContext2D, meta: RendererCanvasMetaData): void {
+  draw(ctx: CanvasRenderingContext2D, meta: RenderMetaData): void {
     const style = this.getStyle()
     if (!style) return;
 
@@ -37,8 +37,9 @@ export class Grid<UStates extends string> extends Shape {
     const maxDistanceFromOrigin = maxLineCount.clone().multiply(scalledCellSize)
 
     // the min and max points (outside canvas)
-    const minPoint = meta.calculatedPosition.clone().subtract(maxDistanceFromOrigin).subtract(1)
-    const maxPoint = meta.calculatedPosition.clone().add(maxDistanceFromOrigin).add(1)
+    const pos = meta.relativePosition
+    const minPoint = pos.clone().subtract(maxDistanceFromOrigin).subtract(1)
+    const maxPoint = pos.clone().add(maxDistanceFromOrigin).add(1)
 
     // Max lines defaults to Infinity when undefined, and the canvas does not like Infinite values
     // so we clamp them to the screen's borders
@@ -47,12 +48,12 @@ export class Grid<UStates extends string> extends Shape {
 
     // generate and filter all visible y values
     const yValues: number[] = Array.from({ length: lineCounts.y })
-      .map((_, index) => getLinePosition(index, scalledCellSize, meta.calculatedPosition, meta.canvasSize, 'y'))
+      .map((_, index) => getLinePosition(index, scalledCellSize, pos, meta.canvasSize, 'y'))
       .filter(y => y > minPoint.y && y < maxPoint.y)
 
     // generate and filter all visible x values
     const xValues: number[] = Array.from({ length: lineCounts.x })
-      .map((_, index) => getLinePosition(index, scalledCellSize, meta.calculatedPosition, meta.canvasSize, 'x'))
+      .map((_, index) => getLinePosition(index, scalledCellSize, pos, meta.canvasSize, 'x'))
       .filter(x => x > minPoint.x && x < maxPoint.x)
 
     const xCoords = xValues.map(x => ([

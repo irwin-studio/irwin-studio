@@ -1,6 +1,6 @@
-import type { RendererCanvasMetaData } from '..';
-import { Shape, type ShapeConfig } from '../shape';
-import { Vec2 } from '../vec2';
+import type { RenderMetaData } from '$lib/Renderer';
+import { Shape, type ShapeConfig } from '$lib/Renderer/shape';
+import { Vec2 } from '$lib/Renderer/vec2';
 
 export class Circle extends Shape {
   radius: number;
@@ -10,22 +10,20 @@ export class Circle extends Shape {
     this.radius = radius;
   }
 
-  draw(ctx: CanvasRenderingContext2D, meta: RendererCanvasMetaData): void {
+  draw(ctx: CanvasRenderingContext2D, meta: RenderMetaData): void {
     const style = this.getStyle()
     if (!style) return;
-
-    ctx.beginPath();
-
+    const radius = Math.abs(meta.scale * this.radius)
+    
     // set styles
-    ctx.strokeStyle = style.strokeColor;
-    ctx.fillStyle = style.fillColor;
+    ctx.beginPath();
+    ctx.strokeStyle = style.strokeColor
+    ctx.fillStyle = style.fillColor
     ctx.lineWidth = style.strokeWidth
 
-    // draw
-    const radius = Math.abs(meta.scale * this.radius)
-    ctx.arc(meta.calculatedPosition.x, meta.calculatedPosition.y, radius, 0, 2 * Math.PI);
+    const pos = meta.relativePosition
+    ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
 
-    // apply
     ctx.fill()
     ctx.stroke()
     ctx.closePath()

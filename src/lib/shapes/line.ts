@@ -1,6 +1,6 @@
-import type { RendererCanvasMetaData } from '..';
-import { Shape } from '../shape';
-import { Vec2 } from '../vec2';
+import type { RenderMetaData } from '$lib/Renderer'
+import { Shape } from '$lib/Renderer/shape'
+import { Vec2 } from '$lib/Renderer/vec2'
 
 export class Line extends Shape {
   private degrees
@@ -31,7 +31,7 @@ export class Line extends Shape {
     return new Line(firstPoint, degrees + 90, distance)
   }
 
-  draw(ctx: CanvasRenderingContext2D, meta: RendererCanvasMetaData): void {
+  draw(ctx: CanvasRenderingContext2D, meta: RenderMetaData): void {
     const style = this.getStyle()
     if (!style) return;
 
@@ -65,8 +65,8 @@ export class Line extends Shape {
       .multiply(distance)
       .multiply(meta.scale)
 
-    const destination = meta.calculatedPosition.clone().add(translation)
-    ctx.lineTo(meta.calculatedPosition.x, meta.calculatedPosition.y)
+    const destination = meta.relativePosition.clone().add(translation)
+    ctx.lineTo(meta.relativePosition.x, meta.relativePosition.y)
     ctx.lineTo(destination.x, destination.y)
 
     // apply

@@ -1,4 +1,4 @@
-import type { CoorindateContext, RendererCanvasMetaData } from '.';
+import type { CoorindateContext, RenderMetaData } from '.';
 import { Info } from './info';
 import type { Vec2, MaybeVec2 } from './vec2';
 
@@ -48,7 +48,7 @@ export abstract class Shape extends Info {
     this.config.parallax = config?.parallax ?? 1
   }
 
-  abstract draw(context: CanvasRenderingContext2D, metadata: RendererCanvasMetaData): void;
+  abstract draw(context: CanvasRenderingContext2D, metadata: RenderMetaData): void;
 
   setPos(vec2: MaybeVec2) {
     this.position.moveTo(vec2);

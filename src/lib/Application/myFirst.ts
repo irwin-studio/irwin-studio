@@ -1,7 +1,7 @@
-import type { Shape, ShapeConfig } from '$lib/Renderer/shape';
-import { Circle } from '$lib/Renderer/shapes/circle';
-import { Line } from '$lib/Renderer/shapes/line';
+import type { ShapeConfig, Shape } from '$lib/Renderer/shape';
 import { Vec2, type MaybeVec2 } from '$lib/Renderer/vec2';
+import { Circle } from '$lib/shapes/circle';
+import { Line } from '$lib/shapes/line';
 import { Application } from '.';
 import { Node } from './node';
 
@@ -65,6 +65,7 @@ export class TreeApp extends Application {
         this.previousShape.position,
         newShape.position
       )
+      line.config.parallax = 1.2
 
       this.layer.addShape(line)
     }
@@ -91,7 +92,7 @@ export class TreeApp extends Application {
 
   getOnClickHandler(): ReturnType<Application['getOnClickHandler']> {
     return ([event, meta]) => {
-      this.addNode(meta.calculatedPosition) 
+      this.addNode(meta.relativePosition) 
     }
   }
 }

@@ -1,7 +1,6 @@
 import { Layer } from '$lib/Renderer/layer'
-import type { Handler, RendererCanvasMetaData } from '../Renderer'
+import type { EventMetaData, Handler, Renderer } from '../Renderer'
 import { Info } from '../Renderer/info'
-import type { Shape } from '../Renderer/shape'
 
 export abstract class Application extends Info implements Application {
   layer: Layer = new Layer()
@@ -11,8 +10,8 @@ export abstract class Application extends Info implements Application {
   }
 
   abstract performNextStep(): void
-  abstract getOnDragHandler(): Handler<[MouseEvent, RendererCanvasMetaData]>
-  abstract getOnKeyDownHandler(): Handler<[KeyboardEvent, RendererCanvasMetaData]>
-  abstract getOnWheelHandler(): Handler<[MouseEvent, RendererCanvasMetaData]>
-  abstract getOnClickHandler(): Handler<[MouseEvent, RendererCanvasMetaData]>
+  abstract getOnDragHandler(): Handler<[MouseEvent, EventMetaData]>
+  abstract getOnKeyDownHandler(): Handler<[KeyboardEvent, EventMetaData]>
+  abstract getOnWheelHandler(): Handler<[MouseEvent, EventMetaData]>
+  abstract getOnClickHandler(): Handler<[MouseEvent, EventMetaData]>
 }

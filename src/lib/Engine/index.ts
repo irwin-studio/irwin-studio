@@ -3,7 +3,7 @@ import type { Renderer } from '$lib/Renderer';
 import { Info } from '$lib/Renderer/info';
 import { Layer } from '$lib/Renderer/layer';
 import type { ShapeConfig } from '$lib/Renderer/shape';
-import { Grid } from '$lib/Renderer/shapes/grid';
+import { Grid } from '$lib/shapes/grid';
 
 const themes: ShapeConfig['themes'] = {
   default: {
@@ -40,8 +40,8 @@ export class Engine extends Info {
     this.addInfoChild('renderer', renderer)
 
     this.renderer = renderer
-    this.renderer.createLayer(this.baseLayer)
-    this.renderer.createLayer(this.application.layer)
+    this.renderer.addLayer(this.baseLayer)
+    this.renderer.addLayer(this.application.layer)
 
     this.baseLayer.addShape(new Grid(20, 20, 20, 20, 'SECONDARY_GRID', { themes }))
     this.baseLayer.addShape(new Grid(100, 100, 4, 4, 'MAIN_GRID', { themes }))

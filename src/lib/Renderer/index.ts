@@ -5,16 +5,28 @@ import { onWheel } from '$lib/util/onWheel';
 import { onKey } from '$lib/util/onKey';
 import { onMouseMove } from '$lib/util/onMouseMove';
 import { Layer } from './layer';
+import { Circle } from '$lib/shapes/circle';
 
 export type Handler<I = never, O = void> = (input: I) => O
 export type CoorindateContext = 'SCREEN' | 'CANVAS'
 
-export interface RendererCanvasMetaData {
-  calculatedPosition: Vec2;
-  screenCenterOffset: Vec2
-  originShift: Vec2
+const debug_layer = new Layer()
+debug_layer.addShape(
+  new Circle(5, 0, 0, 'default', { parallax: 1, themes: { default: { fillColor: "red", strokeColor: "red", strokeWidth: 3 } }}),
+  new Circle(5, 0, 0, 'default', { parallax: 1.1, themes: { default: { fillColor: "blue", strokeColor: "blue", strokeWidth: 3 } }}),
+  new Circle(5, 0, 0, 'default', { parallax: 1.3, themes: { default: { fillColor: "purple", strokeColor: "purple", strokeWidth: 3 } }}),
+)
+
+export interface RenderMetaData {
+  relativePosition: Vec2;
+  absolutePosition: Vec2;
+  scale: number;
   canvasSize: Vec2
-  scale: number
+}
+
+export interface EventMetaData {
+  relativePosition: Vec2
+  absolutePosition: Vec2
 }
 
 export class Renderer extends Info {
@@ -24,21 +36,44 @@ export class Renderer extends Info {
   layers: Set<Layer> = new Set<Layer>();
 
   /** Every coordinate must add this number to center itself on the canvas  */
-  screenCenterOffset: Vec2
-  canvasSize: Vec2
+  private _screenCenterOffset: Vec2 = new Vec2(0, 0)
+
+  setScreenOffset(vec2: MaybeVec2) {
+    this._screenCenterOffset.moveTo(vec2)
+  }
+
+  getScreenOffset(): Vec2 {
+    return this._screenCenterOffset.clone()
+  }
+
+  get canvasSize(): Vec2 {
+    return new Vec2(this.canvas.width, this.canvas.height)
+  }
 
   /** The X and Y distance of the origin from the center of the screen */
-  originShift: Vec2
+  private _originShift: Vec2
+
+  moveOriginTo(vec2: MaybeVec2) {
+    this._originShift.moveTo(vec2);
+  }
+
+  moveOriginBy(width: number, height: number) {
+    this._originShift.add(new Vec2(width, height));
+  }
+
+  getOriginShift(): Vec2 {
+    return this._originShift.clone()
+  }
 
   /** default = 1 */
-  renderScale: number = 3
+  renderScale: number = 1
   mousePosition: Vec2 = new Vec2(0, 0)
 
   callbacks = {
-    onClick: new Set<Handler<[MouseEvent, RendererCanvasMetaData]>>(),
-    onDrag: new Set<Handler<[MouseEvent, RendererCanvasMetaData]>>(),
-    onKeyDown: new Set<Handler<[KeyboardEvent, RendererCanvasMetaData]>>(),
-    onWheel: new Set<Handler<[MouseEvent, RendererCanvasMetaData]>>(),
+    onClick: new Set<Handler<[MouseEvent, EventMetaData]>>(),
+    onDrag: new Set<Handler<[MouseEvent, EventMetaData]>>(),
+    onKeyDown: new Set<Handler<[KeyboardEvent, EventMetaData]>>(),
+    onWheel: new Set<Handler<[MouseEvent, EventMetaData]>>(),
   }
 
   constructor(canvas: HTMLCanvasElement) {
@@ -51,14 +86,10 @@ export class Renderer extends Info {
 
     this.canvas = canvas;
     this.context = context;
-    this.originShift = new Vec2(0, 0)
-    this.canvasSize = new Vec2(this.canvas.width, this.canvas.height)
-    this.screenCenterOffset = new Vec2(
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-    )
-
+    this._originShift = new Vec2(0, 0)
     this.registerHandlers()
+
+    this.layers.add(debug_layer)
   }
 
   private registerHandlers() {
@@ -71,36 +102,44 @@ export class Renderer extends Info {
       };
 
       if (event.ctrlKey) {
-        this.moveOriginTo(0, 0)
+        this.moveOriginTo([0, 0])
         return
       }
 
-      const position = new Vec2(event.clientX, event.clientY)
+      const meta = this.getEventMeta(new Vec2(event.clientX, event.clientY))
       this.callbacks.onClick.forEach(callback => {
-        callback([event, this.getMetadata(position, 'SCREEN')])
+        callback([event, meta])
       })
     })
 
+    onMouseDrag(this.canvas, (event) => {
+      cancelNext = true
+      const pos = this.scaleAbsolutePosition(new Vec2(event.movementX, event.movementY))
+      this.moveOriginBy(pos.x, pos.y);
+    })
+
     onMouseDrag(this.canvas, (event: MouseEvent) => {
-      const position = new Vec2(event.clientX, event.clientY)
+      const meta = this.getEventMeta(new Vec2(event.clientX, event.clientY))
       this.callbacks.onDrag.forEach(callback => {
-        callback([event, this.getMetadata(position, 'SCREEN')])
+        callback([event, meta])
       })
     })
 
     onMouseMove((event) => {
-      this.addInfo('mouse', new Vec2(event.clientX, event.clientY).toString())
+      this.addInfo("mouse", new Vec2(event.clientX, event.clientY).toString())
     })
 
     onKey(/.*/, (event: KeyboardEvent) => {
+      const meta = this.getEventMeta(this.mousePosition)
       this.callbacks.onKeyDown.forEach(callback => {
-        callback([event, this.getMetadata(this.mousePosition, 'SCREEN')])
+        callback([event, meta])
       })
     }, 'DOWN')
 
     onWheel(this.canvas, (event: MouseEvent) => {
+      const meta = this.getEventMeta(this.mousePosition)
       this.callbacks.onWheel.forEach(callback => {
-        callback([event, this.getMetadata(this.mousePosition, 'SCREEN')])
+        callback([event, meta])
       })
     });
 
@@ -109,30 +148,26 @@ export class Renderer extends Info {
       event.stopImmediatePropagation()
       event.preventDefault()
 
-      const mouseStart = this.screenspaceCoordsToCanvas([event.clientX, event.clientY])
+      const mouse = new Vec2(event.clientX, event.clientY)
+      const screenSpaceStart = this.screenSpaceToCanvas(mouse)
 
       const scaleRate = 0.5
       const delta = -(event.deltaY / Math.abs(event.deltaY))
       this.renderScale = this.renderScale + (delta * (this.renderScale * scaleRate))
       this.renderScale = Math.max(this.renderScale, 0.01)
 
-      const mouseEnd = this.screenspaceCoordsToCanvas([event.clientX, event.clientY])
-      const diff = mouseEnd.clone().subtract(mouseStart).multiply(this.renderScale)
+      const screenSpaceEnd = this.screenSpaceToCanvas(mouse)
 
+      const diff = screenSpaceEnd.subtract(screenSpaceStart)
       this.moveOriginBy(diff.x, diff.y)
-    })
-
-    onMouseDrag(this.canvas, (event) => {
-      cancelNext = true
-      this.moveOriginBy(event.movementX, event.movementY);
     })
   }
 
   /**
    * CONFIG
    */
-  createLayer(byoLayer?: Layer) {
-    const newLayer = byoLayer ?? new Layer()
+  addLayer(byoLayer: Layer) {
+    const newLayer = byoLayer
     this.layers.add(newLayer)
     return () => this.removeLayer(newLayer)
   }
@@ -153,53 +188,68 @@ export class Renderer extends Info {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.layers.forEach(layer => {
       layer.getShapes().forEach(shape => {
-        const meta = this.getMetadata(shape.position, 'CANVAS', shape.config.parallax)
+        const meta = this.getRenderMeta(shape.position, shape.config.parallax)
         shape.draw(this.context, meta)
       })
     })
-  }
-
-  moveOriginBy(width: number, height: number) {
-    this.originShift.add(new Vec2(width, height));
-  }
-
-  moveOriginTo(x: number, y: number) {
-    this.originShift.moveTo(new Vec2(x, y));
   }
 
   /**
    * UTIL
    */
 
-  private screenspaceCoordsToCanvas(vec2: MaybeVec2): Vec2 {
-    return Vec2.coerce(vec2)
-      .subtract(this.screenCenterOffset)
-      .subtract(this.originShift)
-      .divide(this.renderScale)
+  /** scales and transaltes the given screen coordinates */
+  // translateRelativePosition(vec2: MaybeVec2, parallax = 1): Vec2 {
+  //   return Vec2.coerce(vec2)
+  //     .add(this._originShift)
+  //     .add(this._screenCenterOffset)
+  // }
+
+  /** scales and transaltes the given screen coordinates */
+  translateRelativePosition(vec2: MaybeVec2, parallax = 1): Vec2 {
+    const start = Vec2.coerce(vec2)
+    return start.clone()
+      .add(this._originShift.clone())
+      .add(this._screenCenterOffset.clone().divide(this.renderScale))
   }
 
-  private getMetadata(position: Vec2, context: CoorindateContext, parallax: number = 1): RendererCanvasMetaData {
-    this.canvasSize = new Vec2(this.canvas.width, this.canvas.height)
+  translateAbsolutePosition(vec2: MaybeVec2): Vec2 {
+    return Vec2.coerce(vec2)
+      .subtract(this._originShift)
+      .subtract(this._screenCenterOffset.clone().divide(this.renderScale))
+  }
 
-    const scaledParallax = this.renderScale * (parallax - 1)
-    const parallaxTranslation = this.originShift.clone().multiply(scaledParallax)
+  scaleRelativePosition(vec2: MaybeVec2, parallax = 1): Vec2 {
+    return Vec2.coerce(vec2)
+      .multiply(this.renderScale)
+  }
 
-    let calculatedPosition: Vec2;
-    if (context === 'SCREEN') {
-      calculatedPosition = this.screenspaceCoordsToCanvas(position)
-    } else {
-      const absolutePosition = position.clone().multiply(this.renderScale).add(this.originShift)
-      calculatedPosition = absolutePosition.clone()
-        .add(this.screenCenterOffset.clone())
-        .add(parallaxTranslation)
-    }
+  scaleAbsolutePosition(vec2: MaybeVec2): Vec2 {
+    return Vec2.coerce(vec2).divide(this.renderScale)
+  }
 
+  screenSpaceToCanvas(vec2: MaybeVec2) {
+    return this.translateAbsolutePosition(this.scaleAbsolutePosition(vec2))
+  }
+
+  canvasToScreenspace(vec2: MaybeVec2) {
+    const start = Vec2.coerce(vec2)
+    return this.scaleRelativePosition(this.translateRelativePosition(start))
+  }
+
+  private getRenderMeta(position: Vec2, parallax: number = 1): RenderMetaData {
     return {
-      calculatedPosition: calculatedPosition,
-      screenCenterOffset: this.screenCenterOffset,
-      originShift: this.originShift,
       canvasSize: this.canvasSize,
-      scale: this.renderScale * parallax,
+      scale: this.renderScale,
+      relativePosition: this.scaleRelativePosition(this.translateRelativePosition(position, parallax), parallax),
+      absolutePosition: position,
+    }
+  }
+
+  private getEventMeta(position: Vec2): EventMetaData {
+    return {
+      relativePosition: this.screenSpaceToCanvas(position),
+      absolutePosition: position,
     }
   }
 
@@ -207,8 +257,9 @@ export class Renderer extends Info {
     const ownInfo = super.getInfo()
 
     return {
-      screenspaceOffset: this.screenCenterOffset.toString(),
-      originShift: this.originShift.toString(),
+      canvasToScreen: this.canvasToScreenspace([0,0]).toString(),
+      screenspaceOffset: this._screenCenterOffset.toString(),
+      originShift: this._originShift.toString(),
       scale: `${this.renderScale}`,
       mouse: this.mousePosition.toString(),
       ...ownInfo
@@ -219,25 +270,23 @@ export class Renderer extends Info {
    * HANDLER REGISTERS
    */
 
-  onClick(handler: Handler<[MouseEvent, RendererCanvasMetaData]>) {
+  onClick(handler: Handler<[MouseEvent, EventMetaData]>) {
     this.callbacks.onClick.add(handler)
     return () => this.callbacks.onClick.delete(handler)
   }
 
-  onDrag(handler: Handler<[MouseEvent, RendererCanvasMetaData]>) {
+  onDrag(handler: Handler<[MouseEvent, EventMetaData]>) {
     this.callbacks.onDrag.add(handler)
     return () => this.callbacks.onDrag.delete(handler)
   }
 
-  onKeyDown(handler: Handler<[KeyboardEvent, RendererCanvasMetaData]>) {
+  onKeyDown(handler: Handler<[KeyboardEvent, EventMetaData]>) {
     this.callbacks.onKeyDown.add(handler)
     return () => this.callbacks.onKeyDown.delete(handler)
   }
 
-  onWheel(handler: Handler<[MouseEvent, RendererCanvasMetaData]>) {
+  onWheel(handler: Handler<[MouseEvent, EventMetaData]>) {
     this.callbacks.onWheel.add(handler)
     return () => this.callbacks.onWheel.delete(handler)
   }
-
-
 }

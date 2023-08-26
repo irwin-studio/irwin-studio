@@ -7,9 +7,11 @@ export class Layer {
     //
   }
 
-  addShape(shape: Shape) {
-    this._shapes.add(shape)
-    return () => this._shapes.delete(shape)
+  addShape(...shapes: Shape[]) {
+    shapes.forEach((shape) => this._shapes.add(shape))
+    return () => {
+      shapes.forEach((shape) => this._shapes.delete(shape))
+    }
   }
 
   removeShape(shape: Shape) {
