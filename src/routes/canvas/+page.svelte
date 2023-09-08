@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { TreeApp } from '$lib/Application/myFirst';
-	import { Engine } from '$lib/Engine';
-	import { Renderer } from '$lib/Renderer';
-	import type { ShapeTheme } from '$lib/Renderer/shape';
+	import { TreeApp } from '$lib/graph/Application/myFirst';
+	import { Engine } from '$lib/graph/Engine';
+	import { Renderer } from '$lib/graph/Renderer';
+	import type { ShapeTheme } from '$lib/graph/Renderer/shape';
 	import { onMount, onDestroy } from 'svelte';
 
 

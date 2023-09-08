@@ -1,8 +1,8 @@
-import type { RenderMetaData } from '$lib/Renderer';
-import type { ShapeConfig } from '$lib/Renderer/shape';
-import { Vec2, type MaybeVec2 } from '$lib/Renderer/vec2';
-import { Circle } from '$lib/shapes/circle';
-import { Line } from '$lib/shapes/line';
+import type { ShapeConfig } from '$lib/graph/Renderer/shape';
+import { Vec2, type MaybeVec2 } from '$lib/graph/Renderer/vec2';
+import { Circle } from '$lib/graph/shapes/circle';
+import { Line } from '$lib/graph/shapes/line';
+import type { RenderMetaData } from '../Renderer';
 
 const NODE_SIZE = 20;
 

@@ -1,9 +1,9 @@
-import type { Application } from '$lib/Application';
-import type { Renderer } from '$lib/Renderer';
-import { Info } from '$lib/Renderer/info';
-import { Layer } from '$lib/Renderer/layer';
-import type { ShapeConfig } from '$lib/Renderer/shape';
-import { Grid } from '$lib/shapes/grid';
+import { Info } from '$lib/graph/Renderer/info';
+import { Layer } from '$lib/graph/Renderer/layer';
+import type { ShapeConfig } from '$lib/graph/Renderer/shape';
+import { Grid } from '$lib/graph/shapes/grid';
+import type { Application } from '../Application';
+import type { Renderer } from '../Renderer';
 
 const themes: ShapeConfig['themes'] = {
   default: {

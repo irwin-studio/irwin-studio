@@ -1,6 +1,6 @@
-import { Layer } from '$lib/Renderer/layer'
+import { Layer } from '$lib/graph/Renderer/layer'
 import type { OnKeyMeta } from '$lib/util/onKey'
-import type { EventMetaData, Handler, Renderer } from '../Renderer'
+import type { Handler, EventMetaData } from '../Renderer'
 import { Info } from '../Renderer/info'
 
 export abstract class Application extends Info implements Application {

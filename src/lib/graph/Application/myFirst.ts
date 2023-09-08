@@ -1,6 +1,6 @@
-import type { ShapeConfig } from '$lib/Renderer/shape';
-import { Vec2, type MaybeVec2 } from '$lib/Renderer/vec2';
-import { Line } from '$lib/shapes/line';
+import type { ShapeConfig } from '$lib/graph/Renderer/shape';
+import { Vec2, type MaybeVec2 } from '$lib/graph/Renderer/vec2';
+import { Line } from '$lib/graph/shapes/line';
 import { Application } from '.';
 import { Node } from './node';
 

@@ -1,6 +1,6 @@
-import type { RenderMetaData } from '$lib/Renderer'
-import { Shape, type ShapeConfig } from '$lib/Renderer/shape'
-import { Vec2, type MaybeVec2 } from '$lib/Renderer/vec2'
+import { Shape, type ShapeConfig } from '$lib/graph/Renderer/shape'
+import { Vec2, type MaybeVec2 } from '$lib/graph/Renderer/vec2'
+import type { RenderMetaData } from '../Renderer'
 
 export class Line extends Shape {
   private degrees

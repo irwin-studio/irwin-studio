@@ -1,6 +1,6 @@
-import type { RenderMetaData } from '$lib/Renderer'
-import { Shape, type ShapeConfig } from '$lib/Renderer/shape'
-import { Vec2 } from '$lib/Renderer/vec2'
+import { Shape, type ShapeConfig } from '$lib/graph/Renderer/shape'
+import { Vec2 } from '$lib/graph/Renderer/vec2'
+import type { RenderMetaData } from '../Renderer'
 
 function getLinePosition(index: number, cellSize: Vec2, relativePosition: Vec2, canvasSize: Vec2, axis: 'x' | 'y') {
   const start = index * cellSize[axis]
@@ -84,5 +84,9 @@ export class Grid<UStates extends string> extends Shape {
       ctx.stroke();
       ctx.closePath()
     })
+  }
+
+  isWithin(): boolean {
+    return false;
   }
 }
