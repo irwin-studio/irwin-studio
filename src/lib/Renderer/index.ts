@@ -6,9 +6,9 @@ import { onKey, type OnKeyMeta } from '$lib/util/onKey';
 import { onMouseMove } from '$lib/util/onMouseMove';
 import type { Layer } from './layer';
 import { onClick } from '$lib/util/onClick';
+import type { Shape } from './shape';
 
 export type Handler<I = never, O = void> = (input: I) => O
-export type CoorindateContext = 'SCREEN' | 'CANVAS'
 const FPS_AVG_OVER = 50
 
 function runCallbacks<Args extends any[]>(callbacks: Set<(...args: Args) => void>) {
@@ -204,12 +204,21 @@ export class Renderer extends Info {
     this._renderTimes.shift()
 
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    this.layers.forEach(layer => {
-      layer.getShapes().forEach(shape => {
-        const meta = this.getRenderMeta(shape.position)
-        shape.draw(this.context, meta)
-      })
+
+    const sorted = this.sortShapes()
+    sorted.forEach(shape => {
+      const meta = this.getRenderMeta(shape.position)
+      shape.draw(this.context, meta)
     })
+  }
+
+  sortShapes(): Shape[] {
+    const allShapes = [...this.layers].map(layer => ([...layer.getShapes()])).flat()
+    const orderShapes = (shapeA: Shape, shapeB: Shape) => {
+      return (shapeA.config.renderLayer ?? 1) - (shapeB.config.renderLayer ?? 1)
+    }
+
+    return allShapes.sort(orderShapes)
   }
 
   /**

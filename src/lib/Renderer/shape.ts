@@ -1,4 +1,4 @@
-import type { CoorindateContext, RenderMetaData } from '.';
+import type { RenderMetaData } from '.';
 import { Info } from './info';
 import { Vec2, type MaybeVec2 } from './vec2';
 
@@ -9,13 +9,13 @@ export type ShapeTheme = {
 }
 
 export type ShapeConfig = {
-  stage?: CoorindateContext
+  renderLayer?: number;
   parallax?: number
   themes?: Record<string, ShapeTheme>
 }
 
 export const DEFAULT_CONFIG: ShapeConfig = {
-  stage: 'CANVAS',
+  renderLayer: 1,
   parallax: 1,
   themes: {
     default: {

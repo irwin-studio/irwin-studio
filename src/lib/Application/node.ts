@@ -30,7 +30,12 @@ export class Node extends Circle {
   connectTo(node: Node) {
     node.connectionsFrom.add(this.id)
     this.connectionsTo.add(node.id)
-    const line = this.lines.get(node) ?? Line.Between(this.position, node.position, this.theme, this.config)
+
+    const config: ShapeConfig = JSON.parse(JSON.stringify(this.config))
+    config.renderLayer = (this.config.renderLayer ?? 1) - 5
+
+    const line = this.lines.get(node) ?? Line.Between(this.position, node.position, this.theme, config)
+
     this.lines.set(node, line)
   }
 

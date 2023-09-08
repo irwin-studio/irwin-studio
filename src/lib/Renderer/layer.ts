@@ -3,8 +3,8 @@ import type { Shape } from './shape';
 export class Layer {
   _shapes: Set<Shape> = new Set<Shape>()
 
-  constructor() {
-    //
+  constructor(...shapes: Shape[]) {
+    this.addShape(...shapes)
   }
 
   addShape(...shapes: Shape[]) {
