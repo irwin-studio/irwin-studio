@@ -18,8 +18,8 @@ jobs:
       - name: Fetch Latest
         uses: actions/checkout@v2
 
-      - name: Increase inotify watchers
-        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+      # - name: Increase inotify watchers
+      #   run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -27,7 +27,7 @@ jobs:
           node-version: '14'
 
       - name: Get yarn cache
-        id: yarn-cache-id
+        id: irwin-studio-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Cache yarn libs
@@ -42,11 +42,11 @@ jobs:
       - name: Install Dependencies
         run: yarn --prefer--offline --frozen-lockfile
 
-      # The double-double-dash (-- --) is required here because...
-      # The second is for lerna to parse the flags to the npm client
-      # The first one is so that the second '--' and the following flags are sent to the lerna command
-      - name: Bootstrap Packages
-        run: yarn lerna bootstrap -- -- --prefer-offline --frozen-lockfile
+      # # The double-double-dash (-- --) is required here because...
+      # # The second is for lerna to parse the flags to the npm client
+      # # The first one is so that the second '--' and the following flags are sent to the lerna command
+      # - name: Bootstrap Packages
+      #   run: yarn lerna bootstrap -- -- --prefer-offline --frozen-lockfile
 
       - name: Set Details
         run: |
@@ -60,40 +60,10 @@ jobs:
         run: git push --follow-tags origin main
 
       - name: Build Frontend
-        run: yarn --cwd ./packages/frontend build
-        env:
-          FB_API_KEY: ${{ secrets.FB_API_KEY }}
-          FB_AUTH_DOMAIN: ${{ secrets.FB_AUTH_DOMAIN }}
-          FB_PROJECT_ID: ${{ secrets.FB_PROJECT_ID }}
-          FB_STORAGE_BUCKET: ${{ secrets.FB_STORAGE_BUCKET }}
-          FB_MESSAGING_SENDER_ID: ${{ secrets.FB_MESSAGING_SENDER_ID }}
-          FB_APP_ID: ${{ secrets.FB_APP_ID }}
-          FB_MEASUREMENT_ID: ${{ secrets.FB_MEASUREMENT_ID }}
+        run: yarn build
 
-      - name: Deploy Frontend
-        uses: cloudflare/wrangler-action@1.3.0
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          workingDirectory: ./packages/frontend
-        env:
-          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          FB_API_KEY: ${{ secrets.FB_API_KEY }}
-          FB_AUTH_DOMAIN: ${{ secrets.FB_AUTH_DOMAIN }}
-          FB_PROJECT_ID: ${{ secrets.FB_PROJECT_ID }}
-          FB_STORAGE_BUCKET: ${{ secrets.FB_STORAGE_BUCKET }}
-          FB_MESSAGING_SENDER_ID: ${{ secrets.FB_MESSAGING_SENDER_ID }}
-          FB_APP_ID: ${{ secrets.FB_APP_ID }}
-          FB_MEASUREMENT_ID: ${{ secrets.FB_MEASUREMENT_ID }}
+      # - name: Deploy Frontend
+      #   uses: cloudflare/wrangler-action@1.3.0
 
       - name: Build Backend
-        run: yarn --cwd ./packages/backend build
-
-      - name: Deploy Backend
-        uses: cloudflare/wrangler-action@1.3.0
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          workingDirectory: ./packages/backend
-        env:
-          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: yarn build
