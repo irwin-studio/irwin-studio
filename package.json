@@ -5,40 +5,50 @@
   "license": "AGPL-3.0-only",
   "description": "Irwin Studio is my port-folio website created with a react frontend and graphql backend that is deployed using cloudflare workers",
   "homepage": "https://github.com/lauchlan105/irwin-studio#readme",
+  "type": "module",
   "scripts": {
-    "release": "standard-version",
-    "start": "start:frontend",
-    "start:frontend": "yarn --cwd ./packages/frontend start",
-    "build": "build:frontend",
-    "build:frontend": "yarn --cwd ./packages/frontend build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lauchlan105/irwin-studio.git"
-  },
-  "bugs": {
-    "url": "https://github.com/lauchlan105/irwin-studio/issues"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run test:integration && npm run test:unit",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "format": "prettier --plugin-search-dir . --write .",
+    "test:integration": "playwright test",
+    "test:unit": "vitest"
   },
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-conventional": "^11.0.0",
-    "cz-conventional-changelog": "3.3.0",
-    "eslint": "^7.17.0",
-    "eslint-config-prettier": "^7.1.0",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-react": "^7.22.0",
-    "husky": "^4.3.7",
-    "lerna": "^4.0.0",
-    "prettier": "^2.2.1"
+    "@commitlint/config-conventional": "^17.7.0",
+    "@playwright/test": "^1.28.1",
+    "@skeletonlabs/skeleton": "2.3.0",
+    "@skeletonlabs/tw-plugin": "0.2.2",
+    "@sveltejs/adapter-auto": "^2.0.0",
+    "@sveltejs/kit": "^1.20.4",
+    "@tailwindcss/forms": "0.5.6",
+    "@tailwindcss/typography": "0.5.10",
+    "@types/node": "20.8.4",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "autoprefixer": "10.4.16",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-svelte": "^2.30.0",
+    "husky": "^8.0.3",
+    "postcss": "8.4.31",
+    "prettier": "^2.8.0",
+    "prettier-plugin-svelte": "^2.10.1",
+    "svelte": "^4.0.5",
+    "svelte-check": "^3.4.3",
+    "tailwindcss": "3.3.3",
+    "tslib": "^2.4.1",
+    "typescript": "^5.0.0",
+    "vite": "^4.4.2",
+    "vite-plugin-tailwind-purgecss": "0.1.3",
+    "vitest": "^0.32.2"
   },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
+  "dependencies": {
+    "@floating-ui/dom": "1.5.3"
   }
 }
